@@ -2,6 +2,7 @@ from sqlalchemy.schema import Column
 from sqlalchemy.sql.sqltypes import BigInteger
 from sqlalchemy.ext.declarative import declared_attr, declarative_base
 
+
 class Base(object):
 
     @ declared_attr

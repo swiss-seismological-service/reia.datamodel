@@ -5,7 +5,7 @@ from sqlalchemy.sql.sqltypes import BigInteger, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY
 from esloss.datamodel.base import ORMBase
 from esloss.datamodel.mixins import (ClassificationMixin, CreationInfoMixin,
-                              PublicIdMixin, RealQuantityMixin)
+                                     PublicIdMixin, RealQuantityMixin)
 
 
 class AssetCollection(ORMBase, PublicIdMixin, CreationInfoMixin):

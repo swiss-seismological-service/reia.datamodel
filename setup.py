@@ -17,7 +17,10 @@ _authors_email = ['nicolas.schmid@sed.ethz.ch']
 _install_requires = [
     'sqlalchemy>=1.4.31']
 
-_extras_require = {}
+_extras_require = {'dev': [
+    'flake8>=4.0.1',
+    'autopep8>=1.6.0'
+]}
 
 _name = 'esloss.datamodel'
 _version = 0.1
