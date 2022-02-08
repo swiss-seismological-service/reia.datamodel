@@ -1,8 +1,8 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column, ForeignKey, Table
 from sqlalchemy.sql.sqltypes import BigInteger, Boolean, Float, Integer, String
-from datamodel.mixins import EpochMixin, PublicIdMixin, CreationInfoMixin
-from datamodel import ORMBase
+from esloss.datamodel.mixins import EpochMixin, PublicIdMixin, CreationInfoMixin
+from esloss.datamodel import ORMBase
 
 loss_vulnerability_association = Table(
     'loss_vulnerability_association', ORMBase.metadata,

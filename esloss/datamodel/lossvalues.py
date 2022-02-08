@@ -1,8 +1,8 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
 from sqlalchemy.sql.sqltypes import BigInteger, Integer, String
-from datamodel.mixins import RealQuantityMixin, ClassificationMixin
-from datamodel import ORMBase
+from esloss.datamodel.mixins import RealQuantityMixin, ClassificationMixin
+from esloss.datamodel import ORMBase
 
 
 class LossValue(ORMBase, RealQuantityMixin('loss')):

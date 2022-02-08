@@ -3,8 +3,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql.sqltypes import BigInteger, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY
-from datamodel import ORMBase
-from datamodel.mixins import (ClassificationMixin, CreationInfoMixin,
+from esloss.datamodel import ORMBase
+from esloss.datamodel.mixins import (ClassificationMixin, CreationInfoMixin,
                               PublicIdMixin, RealQuantityMixin)
 
 

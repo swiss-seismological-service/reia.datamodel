@@ -1,14 +1,14 @@
 
 from sqlalchemy.schema import Column
 from sqlalchemy.sql.sqltypes import BigInteger
-from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.ext.declarative import declared_attr, declarative_base
 
-from datamodel.asset import (
+from esloss.datamodel.asset import (
     AssetCollection, Asset, Site, Municipality, PostalCode, Canton)
-from datamodel.lossmodel import (LossModel, LossCalculation, LossConfig)
-from datamodel.vulnerability import (
+from esloss.datamodel.lossmodel import (LossModel, LossCalculation, LossConfig)
+from esloss.datamodel.vulnerability import (
     VulnerabilityFunction, VulnerabilityModel)
-from datamodel.lossvalues import (
+from esloss.datamodel.lossvalues import (
     MeanAssetLoss, SiteLoss, TaxonomyLoss, MunicipalityPCLoss)
 
 class Base(object):
@@ -26,3 +26,4 @@ class Base(object):
         return dict_
 
 
+ORMBase = declarative_base(cls=Base)
