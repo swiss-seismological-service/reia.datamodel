@@ -12,68 +12,67 @@ class AssetCollection(ORMBase, PublicIdMixin, CreationInfoMixin):
     """Asset Collection model"""
     name = Column(String, nullable=False)
     category = Column(String)
+    description = Column(String)
     taxonomysource = Column(String)
-    costtypes = Column(ARRAY(String))
-    tagnames = Column(ARRAY(String))
     occupancyperiods = Column(ARRAY(String))
 
-    lossmodels = relationship(
-        'LossModel',
-        back_populates='assetcollection')
-    assets = relationship(
-        'Asset',
-        back_populates='assetcollection',
-        single_parent=True,
-        cascade='all, delete, delete-orphan')
-    sites = relationship(
-        'Site',
-        back_populates='assetcollection',
-        single_parent=True,
-        cascade='all, delete, delete-orphan')
+    costtype = relationship('CostType', back_populates='assetcollection',
+                            passive_deletes=True,
+                            cascade='all, delete-orphan',
+                            lazy='joined')
+
+    losscalculation = relationship('LossModel',
+                                   back_populates='assetcollection')
+
+    assets = relationship('Asset',
+                          back_populates='assetcollection',
+                          passive_deletes=True,
+                          cascade='all, delete-orphan')
+    sites = relationship('Site',
+                         back_populates='assetcollection',
+                         passive_deletes=True,
+                         cascade='all, delete-orphan')
 
 
-class Asset(RealQuantityMixin('contentvalue'),
-            RealQuantityMixin('structuralvalue'),
-            RealQuantityMixin('occupancydaytime'),
-            ClassificationMixin('taxonomy'),
-            ORMBase):
-    """Asset model"""
-    _assetcollection_oid = Column(
-        BigInteger,
-        ForeignKey('loss_assetcollection._oid'))
+class CostType(ORMBase):
+    name = Column(String)
+    type = Column(String)
+    unit = Column(String)
+
+    _assetcollection_oid = Column(BigInteger, ForeignKey(
+        'loss_assetcollection._oid', ondelete='CASCADE'))
     assetcollection = relationship(
         'AssetCollection',
-        back_populates='assets')
+        back_populates='costtype')
+
+
+class Asset(PublicIdMixin,
+            ClassificationMixin('taxonomy'),
+            RealQuantityMixin('contentsvalue'),
+            RealQuantityMixin('structuralvalue'),
+            RealQuantityMixin('dayoccupancy'),
+            RealQuantityMixin('nightoccupancy'),
+            RealQuantityMixin('transitoccupancy'),
+            RealQuantityMixin('nonstructuralvalue'),
+            RealQuantityMixin('businessinterruptionvalue'),
+            ORMBase):
+    """Asset model"""
 
     buildingcount = Column(Integer, nullable=False)
 
+    _assetcollection_oid = Column(BigInteger,
+                                  ForeignKey('loss_assetcollection._oid',
+                                             ondelete="CASCADE"))
+    assetcollection = relationship('AssetCollection',
+                                   back_populates='assets')
+
     # site relationship
-    _site_oid = Column(
-        BigInteger,
-        ForeignKey('loss_site._oid'),
-        nullable=False)
-    site = relationship(
-        'Site',
-        back_populates='assets',
-        lazy='joined')
-
-    # postal code relationship
-    _postalcode_oid = Column(
-        BigInteger,
-        ForeignKey('loss_postalcode._oid'))
-    postalcode = relationship(
-        'PostalCode',
-        back_populates='assets',
-        lazy='joined')
-
-    # municipality relationship
-    _municipality_oid = Column(
-        BigInteger,
-        ForeignKey('loss_municipality._oid'))
-    municipality = relationship(
-        'Municipality',
-        back_populates='assets',
-        lazy='joined')
+    _site_oid = Column(BigInteger,
+                       ForeignKey('loss_site._oid'),
+                       nullable=False)
+    site = relationship('Site',
+                        back_populates='assets',
+                        lazy='joined')
 
     @classmethod
     def get_keys(cls):
@@ -85,54 +84,15 @@ class Site(PublicIdMixin,
            RealQuantityMixin('longitude'),
            ORMBase):
     """Site model"""
+
     # asset collection relationship
     _assetcollection_oid = Column(
         BigInteger,
-        ForeignKey('loss_assetcollection._oid'))
+        ForeignKey('loss_assetcollection._oid', ondelete="CASCADE"))
     assetcollection = relationship(
         'AssetCollection',
-        back_populates='sites',
-        lazy='joined')
+        back_populates='sites')
 
     assets = relationship(
         'Asset',
         back_populates='site')
-
-
-class PostalCode(ORMBase):
-    """PC model"""
-    name = Column(String(50))
-
-    assets = relationship(
-        'Asset',
-        back_populates='postalcode')
-
-
-class Municipality(ORMBase):
-    """Municipality Model"""
-    name = Column(String(50))
-
-    assets = relationship(
-        'Asset',
-        back_populates='municipality')
-
-    # canton relationship
-    _canton_oid = Column(
-        BigInteger,
-        ForeignKey('loss_canton._oid'))
-    canton = relationship(
-        'Canton',
-        back_populates='municipalities',
-        lazy='joined')
-
-
-class Canton(ORMBase):
-    """Canton Model"""
-    name = Column(String(30), nullable=False)
-    code = Column(String(2), nullable=False)
-    municipalities = relationship(
-        'Municipality',
-        back_populates='canton',
-        single_parent=True,
-        cascade='all, delete, delete-orphan'
-    )
