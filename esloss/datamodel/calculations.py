@@ -35,27 +35,27 @@ class RiskCalculation(LossCalculation):
                   primary_key=True)
     _occupantsvulnerabilitymodel_oid = Column(
         BigInteger,
-        ForeignKey('loss_occupantsvulnerabilitymodel._oid',
+        ForeignKey('loss_vulnerabilitymodel._oid',
                    ondelete="RESTRICT"),
         nullable=False)
     _contentsvulnerabilitymodel_oid = Column(
         BigInteger,
-        ForeignKey('loss_contentsvulnerabilitymodel._oid',
+        ForeignKey('loss_vulnerabilitymodel._oid',
                    ondelete="RESTRICT"),
         nullable=False)
     _structuralvulnerabilitymodel_oid = Column(
         BigInteger,
-        ForeignKey('loss_structuralvulnerabilitymodel._oid',
+        ForeignKey('loss_vulnerabilitymodel._oid',
                    ondelete="RESTRICT"),
         nullable=False)
     _nonstructuralvulnerabilitymodel_oid = Column(
         BigInteger,
-        ForeignKey('loss_nonstructuralvulnerabilitymodel._oid',
+        ForeignKey('loss_vulnerabilitymodel._oid',
                    ondelete="RESTRICT"),
         nullable=False)
     _businessinterruptionvulnerabilitymodel_oid = Column(
         BigInteger,
-        ForeignKey('loss_businessinterruptionvulnerabilitymodel._oid',
+        ForeignKey('loss_vulnerabilitymodel._oid',
                    ondelete="RESTRICT"),
         nullable=False)
 
