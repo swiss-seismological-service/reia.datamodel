@@ -1,13 +1,17 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
 from sqlalchemy.sql.sqltypes import BigInteger, String
-from esloss.datamodel.mixins import CreationInfoMixin
+from sqlalchemy.ext.mutable import MutableDict
+
+from esloss.datamodel.mixins import CreationInfoMixin, JSONEncodedDict
 from esloss.datamodel.base import ORMBase
 
 
 class LossCalculation(ORMBase, CreationInfoMixin):
     """Calculation Parameters model"""
+
     aggregateBy = Column(String(20))
+    config = Column(MutableDict.as_mutable(JSONEncodedDict))
 
     _assetcollection_oid = Column(BigInteger,
                                   ForeignKey('loss_assetcollection._oid',
@@ -26,27 +30,59 @@ class LossCalculation(ORMBase, CreationInfoMixin):
 
 class RiskCalculation(LossCalculation):
     __tablename__ = 'loss_riskcalculation'
-    _oid = Column(BigInteger,
-                  ForeignKey('loss_losscalculation._oid'),
+
+    _oid = Column(BigInteger, ForeignKey('loss_losscalculation._oid'),
                   primary_key=True)
+    _occupantsvulnerabilitymodel_oid = Column(
+        BigInteger,
+        ForeignKey('loss_occupantsvulnerabilitymodel._oid',
+                   ondelete="RESTRICT"),
+        nullable=False)
+    _contentsvulnerabilitymodel_oid = Column(
+        BigInteger,
+        ForeignKey('loss_contentsvulnerabilitymodel._oid',
+                   ondelete="RESTRICT"),
+        nullable=False)
+    _structuralvulnerabilitymodel_oid = Column(
+        BigInteger,
+        ForeignKey('loss_structuralvulnerabilitymodel._oid',
+                   ondelete="RESTRICT"),
+        nullable=False)
+    _nonstructuralvulnerabilitymodel_oid = Column(
+        BigInteger,
+        ForeignKey('loss_nonstructuralvulnerabilitymodel._oid',
+                   ondelete="RESTRICT"),
+        nullable=False)
+    _businessinterruptionvulnerabilitymodel_oid = Column(
+        BigInteger,
+        ForeignKey('loss_businessinterruptionvulnerabilitymodel._oid',
+                   ondelete="RESTRICT"),
+        nullable=False)
 
-    # occupancevulnerabilitymodel = relationship(
-    #     'OccupanceVulnerabilityModel',
-    #     back_populates='riskcalculation_occupance')
-    # _occupancevulnerabilitymodel_oid = Column(
-    #     BigInteger,
-    #     ForeignKey('loss_occupancevulnerabilitymodel._oid',
-    #                ondelete='RESTRICT'),
-    #     nullable=False)
+    occupantsvulnerabilitymodel = relationship(
+        'OccupantsVulnerabilityModel',
+        backref='riskcalculation',
+        foreign_keys=[_occupantsvulnerabilitymodel_oid])
 
-    # _vulnerabilitymodel_occupance_oid = Column(
-    #     BigInteger,
-    #     ForeignKey('loss_vulnerabilitymodel._oid',
-    #                ondelete='RESTRICT'),
-    #     nullable=False)
+    contentsvulnerabilitymodel = relationship(
+        'ContentsVulnerabilityModel',
+        backref='riskcalculation',
+        foreign_keys=[_contentsvulnerabilitymodel_oid])
 
-    # vulnerabilitymodel_occupance = relationship(
-    #     'VulnerabilityModel', foreign_keys=[_vulnerabilitymodel_occupance_oid])
+    structuralvulnerabilitymodel = relationship(
+        'StructuralVulnerabilityModel',
+        backref='riskcalculation',
+        foreign_keys=[_structuralvulnerabilitymodel_oid])
+
+    nonstructuralvulnerabilitymodel = relationship(
+        'NonstructuralVulnerabilityModel',
+        backref='riskcalculation',
+        foreign_keys=[_nonstructuralvulnerabilitymodel_oid])
+
+    businessinterruptionvulnerabilitymodel = relationship(
+        'BusinessInterruptionVulnerabilityModel',
+        backref='riskcalculation',
+        foreign_keys=[_businessinterruptionvulnerabilitymodel_oid])
 
     __mapper_args__ = {
         'polymorphic_identity': 'riskcalculation'

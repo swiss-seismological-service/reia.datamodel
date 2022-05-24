@@ -1,20 +1,31 @@
-from sqlalchemy import Column
+from sqlalchemy import Boolean, Column, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql.sqltypes import BigInteger, Integer, String
-from sqlalchemy.dialects.postgresql import ARRAY
 from esloss.datamodel.base import ORMBase
 from esloss.datamodel.mixins import (ClassificationMixin, CreationInfoMixin,
-                                     PublicIdMixin, RealQuantityMixin)
+                                     PublicIdMixin)
 
 
 class AssetCollection(ORMBase, PublicIdMixin, CreationInfoMixin):
     """Asset Collection model"""
-    name = Column(String, nullable=False)
+    name = Column(String)
     category = Column(String)
     description = Column(String)
     taxonomysource = Column(String)
-    occupancyperiods = Column(ARRAY(String))
+
+    dayoccupancy = Column(Boolean,
+                          server_default='false',
+                          default=False,
+                          nullable=False)
+    nightoccupancy = Column(Boolean,
+                            server_default='false',
+                            default=False,
+                            nullable=False)
+    transitoccupancy = Column(Boolean,
+                              server_default='false',
+                              default=False,
+                              nullable=False)
 
     costtype = relationship('CostType', back_populates='assetcollection',
                             passive_deletes=True,
@@ -46,19 +57,18 @@ class CostType(ORMBase):
         back_populates='costtype')
 
 
-class Asset(PublicIdMixin,
-            ClassificationMixin('taxonomy'),
-            RealQuantityMixin('contentsvalue'),
-            RealQuantityMixin('structuralvalue'),
-            RealQuantityMixin('dayoccupancy'),
-            RealQuantityMixin('nightoccupancy'),
-            RealQuantityMixin('transitoccupancy'),
-            RealQuantityMixin('nonstructuralvalue'),
-            RealQuantityMixin('businessinterruptionvalue'),
-            ORMBase):
+class Asset(PublicIdMixin, ClassificationMixin('taxonomy'), ORMBase):
     """Asset model"""
 
     buildingcount = Column(Integer, nullable=False)
+
+    contentsvalue = Column(Float)
+    structuralvalue = Column(Float)
+    nonstructuralvalue = Column(Float)
+    dayoccupancy = Column(Float)
+    nightoccupancy = Column(Float)
+    transitoccupancy = Column(Float)
+    businessinterruptionvalue = Column(Float)
 
     _assetcollection_oid = Column(BigInteger,
                                   ForeignKey('loss_assetcollection._oid',
@@ -79,11 +89,11 @@ class Asset(PublicIdMixin,
         return cls.__table__.c.keys()
 
 
-class Site(PublicIdMixin,
-           RealQuantityMixin('latitude'),
-           RealQuantityMixin('longitude'),
-           ORMBase):
+class Site(PublicIdMixin, ORMBase):
     """Site model"""
+
+    longitude = Column(Float, nullable=False)
+    latitude = Column(Float, nullable=False)
 
     # asset collection relationship
     _assetcollection_oid = Column(

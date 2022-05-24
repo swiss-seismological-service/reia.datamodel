@@ -1,10 +1,26 @@
 import functools
 import datetime
 import enum
-
+import json
 from sqlalchemy import (
-    Column, Integer, Float, DateTime, String)
+    Column, Integer, Float, DateTime, String, TypeDecorator, VARCHAR)
 from sqlalchemy.ext.declarative import declared_attr
+
+
+class JSONEncodedDict(TypeDecorator):
+    "Represents an immutable structure as a json-encoded string."
+
+    impl = VARCHAR
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            value = json.dumps(value)
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is not None:
+            value = json.loads(value)
+        return value
 
 
 class CreationInfoMixin(object):
@@ -30,7 +46,7 @@ class PublicIdMixin(object):
     `SQLAlchemy <https://www.sqlalchemy.org/>`_ mixin emulating type
     :code:`PublicId` from `QuakeML <https://quake.ethz.ch/quakeml/>`_.
     """
-    publicid_resourceid = Column(String)
+    publicid_resourceid = Column(String, nullable=False)
 
 
 def ClassificationMixin(name, column_prefix=None):
