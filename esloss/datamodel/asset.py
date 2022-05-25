@@ -1,7 +1,11 @@
-from sqlalchemy import Boolean, Column, Float
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.schema import ForeignKey
-from sqlalchemy.sql.sqltypes import BigInteger, Integer, String
+from sqlalchemy.sql.schema import Column, ForeignKey
+from sqlalchemy.sql.sqltypes import (BigInteger,
+                                     Integer,
+                                     String,
+                                     ARRAY,
+                                     Boolean,
+                                     Float)
 
 from esloss.datamodel.base import ORMBase
 from esloss.datamodel.mixins import (ClassificationMixin, CreationInfoMixin,
@@ -14,7 +18,7 @@ class AssetCollection(ORMBase, PublicIdMixin, CreationInfoMixin):
     category = Column(String)
     description = Column(String)
     taxonomysource = Column(String)
-
+    tagnames = Column(ARRAY(String))
     dayoccupancy = Column(Boolean,
                           server_default='false',
                           default=False,
