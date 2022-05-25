@@ -2,6 +2,7 @@ from sqlalchemy import Boolean, Column, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.sql.sqltypes import BigInteger, Integer, String
+
 from esloss.datamodel.base import ORMBase
 from esloss.datamodel.mixins import (ClassificationMixin, CreationInfoMixin,
                                      PublicIdMixin)
@@ -70,6 +71,20 @@ class Asset(PublicIdMixin, ClassificationMixin('taxonomy'), ORMBase):
     transitoccupancy = Column(Float)
     businessinterruptionvalue = Column(Float)
 
+    _cantonaggregationtag_oid = Column(
+        BigInteger, ForeignKey('loss_aggregationtag._oid'))
+    cantonaggregationtag = relationship(
+        'CantonAggregationTag',
+        backref='assets',
+        foreign_keys=[_cantonaggregationtag_oid])
+
+    _gemeindeaggregationtag_oid = Column(
+        BigInteger, ForeignKey('loss_aggregationtag._oid'))
+    gemeindeaggregationtag = relationship(
+        'GemeindeAggregationTag',
+        backref='assets',
+        foreign_keys=[_gemeindeaggregationtag_oid])
+
     _assetcollection_oid = Column(BigInteger,
                                   ForeignKey('loss_assetcollection._oid',
                                              ondelete="CASCADE"))
@@ -106,3 +121,32 @@ class Site(PublicIdMixin, ORMBase):
     assets = relationship(
         'Asset',
         back_populates='site')
+
+
+class AggregationTag(ORMBase):
+    name = Column(String, nullable=False)
+
+    lossvalues = relationship(
+        'AggregatedLoss',
+        back_populates='aggregationtag')
+
+    _type = Column(String(25))
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'aggregationtag',
+        'polymorphic_on': _type,
+    }
+
+
+class CantonAggregationTag(AggregationTag):
+    __tablename__ = 'loss_aggregationtag'
+    __mapper_args__ = {
+        'polymorphic_identity': 'cantonaggregationtag'
+    }
+
+
+class GemeindeAggregationTag(AggregationTag):
+    __tablename__ = 'loss_aggregationtag'
+    __mapper_args__ = {
+        'polymorphic_identity': 'gemeindeaggregationtag'
+    }
