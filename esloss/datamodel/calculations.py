@@ -10,7 +10,7 @@ from esloss.datamodel.base import ORMBase
 class LossCalculation(ORMBase, CreationInfoMixin):
     """Calculation Parameters model"""
 
-    aggregateBy = Column(String(20))
+    aggregateby = Column(String(20))
     config = Column(MutableDict.as_mutable(JSONEncodedDict))
 
     _assetcollection_oid = Column(BigInteger,
@@ -36,28 +36,23 @@ class RiskCalculation(LossCalculation):
     _occupantsvulnerabilitymodel_oid = Column(
         BigInteger,
         ForeignKey('loss_vulnerabilitymodel._oid',
-                   ondelete="RESTRICT"),
-        nullable=False)
+                   ondelete="RESTRICT"))
     _contentsvulnerabilitymodel_oid = Column(
         BigInteger,
         ForeignKey('loss_vulnerabilitymodel._oid',
-                   ondelete="RESTRICT"),
-        nullable=False)
+                   ondelete="RESTRICT"))
     _structuralvulnerabilitymodel_oid = Column(
         BigInteger,
         ForeignKey('loss_vulnerabilitymodel._oid',
-                   ondelete="RESTRICT"),
-        nullable=False)
+                   ondelete="RESTRICT"))
     _nonstructuralvulnerabilitymodel_oid = Column(
         BigInteger,
         ForeignKey('loss_vulnerabilitymodel._oid',
-                   ondelete="RESTRICT"),
-        nullable=False)
+                   ondelete="RESTRICT"))
     _businessinterruptionvulnerabilitymodel_oid = Column(
         BigInteger,
         ForeignKey('loss_vulnerabilitymodel._oid',
-                   ondelete="RESTRICT"),
-        nullable=False)
+                   ondelete="RESTRICT"))
 
     occupantsvulnerabilitymodel = relationship(
         'OccupantsVulnerabilityModel',

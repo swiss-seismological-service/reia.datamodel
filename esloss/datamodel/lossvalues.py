@@ -33,10 +33,9 @@ class AggregatedLoss(LossValue):
     """Loss by Aggregation Tag"""
 
     _aggregationtag_oid = Column(BigInteger,
-                                 ForeignKey('loss_aggregationtag._oid'))
-    aggregationtag = relationship(
-        'AggregationTag',
-        back_populates='lossvalues')
+                                 ForeignKey('loss_aggregationtag._oid'),
+                                 nullable=False)
+    aggregationtag = relationship('AggregationTag')
 
     __mapper_args__ = {
         'polymorphic_identity': 'aggregatedloss'

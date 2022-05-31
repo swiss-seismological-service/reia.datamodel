@@ -1,15 +1,11 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
-from sqlalchemy.sql.sqltypes import (BigInteger,
-                                     Integer,
-                                     String,
-                                     ARRAY,
-                                     Boolean,
-                                     Float)
+from sqlalchemy.sql.sqltypes import (
+    BigInteger, Integer, String, Boolean, Float)
 
 from esloss.datamodel.base import ORMBase
-from esloss.datamodel.mixins import (ClassificationMixin, CreationInfoMixin,
-                                     PublicIdMixin)
+from esloss.datamodel.mixins import (
+    ClassificationMixin, CreationInfoMixin, PublicIdMixin)
 
 
 class AssetCollection(ORMBase, PublicIdMixin, CreationInfoMixin):
@@ -18,7 +14,6 @@ class AssetCollection(ORMBase, PublicIdMixin, CreationInfoMixin):
     category = Column(String)
     description = Column(String)
     taxonomysource = Column(String)
-    tagnames = Column(ARRAY(String))
     dayoccupancy = Column(Boolean,
                           server_default='false',
                           default=False,
@@ -49,6 +44,11 @@ class AssetCollection(ORMBase, PublicIdMixin, CreationInfoMixin):
                          passive_deletes=True,
                          cascade='all, delete-orphan')
 
+    aggregationtags = relationship('AggregationTag',
+                                   back_populates='assetcollection',
+                                   passive_deletes=True,
+                                   cascade='all, delete-orphan')
+
 
 class CostType(ORMBase):
     name = Column(String)
@@ -75,19 +75,11 @@ class Asset(PublicIdMixin, ClassificationMixin('taxonomy'), ORMBase):
     transitoccupancy = Column(Float)
     businessinterruptionvalue = Column(Float)
 
-    _cantonaggregationtag_oid = Column(
+    _aggregationtag_oid = Column(
         BigInteger, ForeignKey('loss_aggregationtag._oid'))
-    cantonaggregationtag = relationship(
-        'CantonAggregationTag',
-        backref='assets',
-        foreign_keys=[_cantonaggregationtag_oid])
-
-    _gemeindeaggregationtag_oid = Column(
-        BigInteger, ForeignKey('loss_aggregationtag._oid'))
-    gemeindeaggregationtag = relationship(
-        'GemeindeAggregationTag',
-        backref='assets',
-        foreign_keys=[_gemeindeaggregationtag_oid])
+    aggregationtag = relationship(
+        'AggregationTag',
+        backref='assets')
 
     _assetcollection_oid = Column(BigInteger,
                                   ForeignKey('loss_assetcollection._oid',
@@ -128,29 +120,13 @@ class Site(PublicIdMixin, ORMBase):
 
 
 class AggregationTag(ORMBase):
+    type = Column(String, nullable=False)
     name = Column(String, nullable=False)
 
-    lossvalues = relationship(
-        'AggregatedLoss',
+    # asset collection relationship
+    _assetcollection_oid = Column(
+        BigInteger,
+        ForeignKey('loss_assetcollection._oid', ondelete="CASCADE"))
+    assetcollection = relationship(
+        'AssetCollection',
         back_populates='aggregationtag')
-
-    _type = Column(String(25))
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'aggregationtag',
-        'polymorphic_on': _type,
-    }
-
-
-class CantonAggregationTag(AggregationTag):
-    __tablename__ = 'loss_aggregationtag'
-    __mapper_args__ = {
-        'polymorphic_identity': 'cantonaggregationtag'
-    }
-
-
-class GemeindeAggregationTag(AggregationTag):
-    __tablename__ = 'loss_aggregationtag'
-    __mapper_args__ = {
-        'polymorphic_identity': 'gemeindeaggregationtag'
-    }
