@@ -1,10 +1,34 @@
 import functools
 import datetime
 import enum
-
+import json
 from sqlalchemy import (
-    Column, Integer, Float, DateTime, String)
+    Column, Integer, Float, DateTime, String, TypeDecorator, VARCHAR)
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.ext.mutable import MutableList
+from sqlalchemy.types import ARRAY, PickleType
+
+
+# SQLite has no ARRAY type. Since we will probably only work with sqlite
+# on a programmatic basis, it should be no problem to save the lists pickled
+CompatibleFloatArray = \
+    ARRAY(Float).with_variant(MutableList.as_mutable(PickleType), 'sqlite')
+
+
+class JSONEncodedDict(TypeDecorator):
+    "Represents an immutable structure as a json-encoded string."
+
+    impl = VARCHAR
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            value = json.dumps(value)
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is not None:
+            value = json.loads(value)
+        return value
 
 
 class CreationInfoMixin(object):
@@ -30,7 +54,7 @@ class PublicIdMixin(object):
     `SQLAlchemy <https://www.sqlalchemy.org/>`_ mixin emulating type
     :code:`PublicId` from `QuakeML <https://quake.ethz.ch/quakeml/>`_.
     """
-    publicid_resourceid = Column(String)
+    publicid = Column(String, nullable=False)
 
 
 def ClassificationMixin(name, column_prefix=None):
@@ -154,12 +178,27 @@ def QuantityMixin(name, quantity_type, column_prefix=None, optional=False,
     def _confidence_level(cls):
         return Column('%sconfidenceLevel' % column_prefix, Float)
 
+    @declared_attr
+    def _pdf_variable(cls):
+        return Column('%spdfvariable' % column_prefix, CompatibleFloatArray)
+
+    @declared_attr
+    def _pdf_probability(cls):
+        return Column('%spdfprobability' % column_prefix, CompatibleFloatArray)
+
+    @declared_attr
+    def _pdf_binedges(cls):
+        return Column('%spdfbinedges' % column_prefix, CompatibleFloatArray)
+
     _func_map = (('value',
                   create_value(quantity_type, column_prefix, optional)),
                  ('uncertainty', _uncertainty),
                  ('loweruncertainty', _lower_uncertainty),
                  ('upperuncertainty', _upper_uncertainty),
-                 ('confidenceLevel', _confidence_level)
+                 ('confidencelevel', _confidence_level),
+                 ('pdfvariable', _pdf_variable),
+                 ('pdfprobability', _pdf_probability),
+                 ('pdfbinedges', _pdf_binedges),
                  )
 
     def __dict__(func_map, attr_prefix):
