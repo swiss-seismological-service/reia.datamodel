@@ -8,12 +8,14 @@ from esloss.datamodel.mixins import (
     ClassificationMixin, CreationInfoMixin, PublicIdMixin)
 
 
-class AssetCollection(ORMBase, PublicIdMixin, CreationInfoMixin):
+class AssetCollection(ORMBase,
+                      PublicIdMixin,
+                      CreationInfoMixin,
+                      ClassificationMixin('taxonomy')):
     """Asset Collection model"""
     name = Column(String)
     category = Column(String)
     description = Column(String)
-    taxonomysource = Column(String)
     dayoccupancy = Column(Boolean,
                           server_default='false',
                           default=False,
