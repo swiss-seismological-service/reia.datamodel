@@ -105,10 +105,6 @@ class Asset(ClassificationMixin('taxonomy'), ORMBase):
                         back_populates='assets',
                         lazy='joined')
 
-    @classmethod
-    def get_keys(cls):
-        return cls.__table__.c.keys()
-
 
 class Site(ORMBase):
     """Site model"""
