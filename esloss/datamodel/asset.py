@@ -68,9 +68,16 @@ class CostType(ORMBase):
 asset_aggregationtag = Table(
     "loss_asset_aggregation",
     ORMBase.metadata,
-    Column("asset", ForeignKey("loss_asset._oid"), primary_key=True),
-    Column("aggregationtag", ForeignKey("loss_aggregationtag._oid"),
-           primary_key=True),
+    Column("asset", ForeignKey(
+        "loss_asset._oid",
+        onupdate="CASCADE",
+        ondelete='CASCADE'),
+        primary_key=True),
+    Column("aggregationtag", ForeignKey(
+        "loss_aggregationtag._oid",
+        onupdate="CASCADE",
+        ondelete='CASCADE'),
+        primary_key=True),
 )
 
 
