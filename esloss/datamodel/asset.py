@@ -96,7 +96,8 @@ class Asset(ClassificationMixin('taxonomy'), ORMBase):
 
     aggregationtags = relationship(
         'AggregationTag', secondary=asset_aggregationtag,
-        back_populates='assets')
+        back_populates='assets',
+        lazy='joined')
 
     _assetcollection_oid = Column(BigInteger,
                                   ForeignKey('loss_assetcollection._oid',
