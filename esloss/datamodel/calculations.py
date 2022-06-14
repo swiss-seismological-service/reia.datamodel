@@ -1,10 +1,22 @@
+import enum
+
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
-from sqlalchemy.sql.sqltypes import BigInteger, String
+from sqlalchemy.sql.sqltypes import BigInteger, String, Enum
 from sqlalchemy.ext.mutable import MutableDict
 
 from esloss.datamodel.mixins import CreationInfoMixin, JSONEncodedDict
 from esloss.datamodel.base import ORMBase
+
+
+class EStatus(enum.Enum):
+    PENDING = 0
+    RUNNING = 1
+    ERROR = 2
+    COMPLETE = 3
+    DISPATCHED = 4
+    PREPARED = 5
+    ONHOLD = 6
 
 
 class LossCalculation(ORMBase, CreationInfoMixin):
@@ -12,6 +24,7 @@ class LossCalculation(ORMBase, CreationInfoMixin):
 
     aggregateby = Column(String(20))
     config = Column(MutableDict.as_mutable(JSONEncodedDict))
+    state = Column(Enum(EStatus), default=EStatus.PENDING)
 
     _assetcollection_oid = Column(BigInteger,
                                   ForeignKey('loss_assetcollection._oid',
