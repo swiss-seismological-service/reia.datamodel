@@ -22,9 +22,10 @@ class EStatus(enum.Enum):
 class LossCalculation(ORMBase, CreationInfoMixin):
     """Calculation Parameters model"""
 
-    aggregateby = Column(String(20))
+    aggregateby = Column(String())
     config = Column(MutableDict.as_mutable(JSONEncodedDict))
-    state = Column(Enum(EStatus), default=EStatus.PENDING)
+    status = Column(Enum(EStatus), default=EStatus.PENDING)
+    description = Column(String())
 
     _assetcollection_oid = Column(BigInteger,
                                   ForeignKey('loss_assetcollection._oid',
@@ -94,4 +95,15 @@ class RiskCalculation(LossCalculation):
 
     __mapper_args__ = {
         'polymorphic_identity': 'riskcalculation'
+    }
+
+
+class DamageCalculation(LossCalculation):
+    __tablename__ = 'loss_damagecalculation'
+
+    _oid = Column(BigInteger, ForeignKey('loss_losscalculation._oid'),
+                  primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'damagecalculation'
     }
