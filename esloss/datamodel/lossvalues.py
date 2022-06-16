@@ -1,14 +1,25 @@
+import enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
-from sqlalchemy.sql.sqltypes import BigInteger, Integer, String
-
-from esloss.datamodel.mixins import RealQuantityMixin
+from sqlalchemy.sql.sqltypes import BigInteger, Integer, String, Enum
 from esloss.datamodel.base import ORMBase
+from esloss.datamodel.mixins import RealQuantityMixin
+
+
+class ELossCategory(enum.Enum):
+    contents = 0
+    businessinterruption = 1
+    nonstructural = 2
+    occupants = 3
+    structural = 4
 
 
 class LossValue(ORMBase, RealQuantityMixin('loss')):
     """Loss Value"""
-    __tablename__ = 'loss_lossvalue'
+
+    # id of the realization
+    eventid = Column(Integer, nullable=False)
+    losscategory = Column(Enum(ELossCategory), nullable=False)
 
     _losscalculation_oid = Column(
         BigInteger,
@@ -18,10 +29,7 @@ class LossValue(ORMBase, RealQuantityMixin('loss')):
         'LossCalculation',
         back_populates='losses')
 
-    # id of the realization
-    eventid = Column(Integer, nullable=False)
-
-    _type = Column(String(25))
+    _type = Column(String(50))
 
     __mapper_args__ = {
         'polymorphic_on': _type,
@@ -30,13 +38,11 @@ class LossValue(ORMBase, RealQuantityMixin('loss')):
 
 
 class AggregatedLoss(LossValue):
-    """Loss by Aggregation Tag"""
-
+    __tablename__ = None
     _aggregationtag_oid = Column(BigInteger,
                                  ForeignKey('loss_aggregationtag._oid'),
                                  nullable=False)
     aggregationtag = relationship('AggregationTag')
-
     __mapper_args__ = {
         'polymorphic_identity': 'aggregatedloss'
     }
@@ -44,6 +50,7 @@ class AggregatedLoss(LossValue):
 
 class SiteLoss(LossValue):
     """Loss by site"""
+    __tablename__ = None
 
     _site_oid = Column(
         BigInteger,
