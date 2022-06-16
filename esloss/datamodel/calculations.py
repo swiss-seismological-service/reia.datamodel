@@ -47,6 +47,9 @@ class RiskCalculation(LossCalculation):
 
     _oid = Column(BigInteger, ForeignKey('loss_losscalculation._oid'),
                   primary_key=True)
+
+    losses = relationship('LossValue', back_populates='riskcalculation')
+
     _occupantsvulnerabilitymodel_oid = Column(
         BigInteger,
         ForeignKey('loss_vulnerabilitymodel._oid',

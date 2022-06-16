@@ -7,13 +7,14 @@ from sqlalchemy.sql.sqltypes import (
 from esloss.datamodel.base import ORMBase
 from esloss.datamodel.mixins import (
     ClassificationMixin, CreationInfoMixin, PublicIdMixin)
+from esloss.datamodel.lossvalues import aggregatedloss_aggregationtag
 
 
 class AssetCollection(ORMBase,
                       PublicIdMixin,
                       CreationInfoMixin,
                       ClassificationMixin('taxonomy')):
-    """Asset Collection model"""
+    '''Asset Collection model'''
     name = Column(String)
     category = Column(String)
     description = Column(String)
@@ -66,23 +67,23 @@ class CostType(ORMBase):
 
 
 asset_aggregationtag = Table(
-    "loss_asset_aggregation",
+    'loss_asset_aggregation',
     ORMBase.metadata,
-    Column("asset", ForeignKey(
-        "loss_asset._oid",
-        onupdate="CASCADE",
+    Column('asset', ForeignKey(
+        'loss_asset._oid',
+        onupdate='CASCADE',
         ondelete='CASCADE'),
         primary_key=True),
-    Column("aggregationtag", ForeignKey(
-        "loss_aggregationtag._oid",
-        onupdate="CASCADE",
+    Column('aggregationtag', ForeignKey(
+        'loss_aggregationtag._oid',
+        onupdate='CASCADE',
         ondelete='CASCADE'),
         primary_key=True),
 )
 
 
 class Asset(ClassificationMixin('taxonomy'), ORMBase):
-    """Asset model"""
+    '''Asset model'''
 
     buildingcount = Column(Integer, nullable=False)
 
@@ -101,7 +102,7 @@ class Asset(ClassificationMixin('taxonomy'), ORMBase):
 
     _assetcollection_oid = Column(BigInteger,
                                   ForeignKey('loss_assetcollection._oid',
-                                             ondelete="CASCADE"))
+                                             ondelete='CASCADE'))
     assetcollection = relationship('AssetCollection',
                                    back_populates='assets')
 
@@ -115,7 +116,7 @@ class Asset(ClassificationMixin('taxonomy'), ORMBase):
 
 
 class Site(ORMBase):
-    """Site model"""
+    '''Site model'''
 
     longitude = Column(Float, nullable=False)
     latitude = Column(Float, nullable=False)
@@ -123,7 +124,7 @@ class Site(ORMBase):
     # asset collection relationship
     _assetcollection_oid = Column(
         BigInteger,
-        ForeignKey('loss_assetcollection._oid', ondelete="CASCADE"))
+        ForeignKey('loss_assetcollection._oid', ondelete='CASCADE'))
     assetcollection = relationship(
         'AssetCollection',
         back_populates='sites')
@@ -140,7 +141,7 @@ class AggregationTag(ORMBase):
     # asset collection relationship
     _assetcollection_oid = Column(
         BigInteger,
-        ForeignKey('loss_assetcollection._oid', ondelete="CASCADE"))
+        ForeignKey('loss_assetcollection._oid', ondelete='CASCADE'))
     assetcollection = relationship(
         'AssetCollection',
         back_populates='aggregationtags')
@@ -148,3 +149,8 @@ class AggregationTag(ORMBase):
     assets = relationship(
         'Asset', secondary=asset_aggregationtag,
         back_populates='aggregationtags')
+
+    losses = relationship(
+        'AggregatedLoss', secondary=aggregatedloss_aggregationtag,
+        back_populates='aggregationtags'
+    )
