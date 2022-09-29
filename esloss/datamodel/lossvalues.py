@@ -1,10 +1,11 @@
 import enum
+
+from esloss.datamodel.base import ORMBase
+from esloss.datamodel.mixins import RealQuantityMixin
 from sqlalchemy import Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
-from sqlalchemy.sql.sqltypes import BigInteger, Integer, String, Enum
-from esloss.datamodel.base import ORMBase
-from esloss.datamodel.mixins import RealQuantityMixin
+from sqlalchemy.sql.sqltypes import BigInteger, Enum, Integer, String
 
 
 class ELossCategory(enum.Enum):
@@ -72,8 +73,7 @@ class SiteLoss(LossValue):
 
     _site_oid = Column(
         BigInteger,
-        ForeignKey('loss_site._oid'),
-        nullable=False
+        ForeignKey('loss_site._oid')
     )
     site = relationship('Site')
 
