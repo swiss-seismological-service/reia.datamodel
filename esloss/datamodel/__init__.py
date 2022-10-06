@@ -1,10 +1,13 @@
-from esloss.datamodel.asset import (AggregationTag, Asset, AssetCollection,
-                                    CostType, Site)
-from esloss.datamodel.calculations import (DamageCalculation, EStatus,
+from esloss.datamodel.asset import (AggregationTag, Asset,  # noqa
+                                    AssetCollection, CostType, Site)
+from esloss.datamodel.calculations import (DamageCalculation, EStatus,  # noqa
                                            RiskCalculation)
-from esloss.datamodel.lossvalues import (AggregatedLoss, ELossCategory,
-                                         LossValue, SiteLoss)
-from esloss.datamodel.vulnerability import (
+from esloss.datamodel.earthquake import EarthquakeInformation  # noqa
+from esloss.datamodel.earthquake import EEarthquakeType  # noqa
+from esloss.datamodel.lossvalues import AggregatedLoss  # noqa
+from esloss.datamodel.lossvalues import (ELossCategory, LossValue,  # noqa
+                                         SiteLoss)
+from esloss.datamodel.vulnerability import (  # noqa
     BusinessInterruptionVulnerabilityModel, ContentsVulnerabilityModel,
     LossRatio, NonstructuralVulnerabilityModel, OccupantsVulnerabilityModel,
     StructuralVulnerabilityModel, VulnerabilityFunction, VulnerabilityModel)

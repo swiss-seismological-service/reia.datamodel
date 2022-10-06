@@ -32,6 +32,11 @@ class LossCalculation(ORMBase, CreationInfoMixin):
     assetcollection = relationship('AssetCollection',
                                    back_populates='losscalculation')
 
+    _earthquakeinformation_oid = Column(BigInteger, ForeignKey(
+        'loss_earthquakeinformation._oid', ondelete='CASCADE'))
+    earthquakeinformation = relationship('EarthquakeInformation',
+                                         back_populates='losscalculation')
+
     _type = Column(String(25))
 
     __mapper_args__ = {
