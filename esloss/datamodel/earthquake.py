@@ -22,11 +22,13 @@ class EarthquakeInformation(
     """Calculation Parameters model"""
 
     time = Column(DateTime())
-    eventid = Column(String())
+    eventid = Column(String(), nullable=False)
     magnitude = Column(Float())
     evaluationmethod = Column(String())
     hazardlevel = Column(Integer())
-    type = Column(Enum(EEarthquakeType, default=EEarthquakeType.NATURAL))
+    type = Column(Enum(EEarthquakeType),
+                  default=EEarthquakeType.NATURAL,
+                  nullable=False)
 
     losscalculation = relationship('LossCalculation',
                                    back_populates='earthquakeinformation',
