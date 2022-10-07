@@ -1,7 +1,8 @@
 import enum
 
 from esloss.datamodel.base import ORMBase
-from esloss.datamodel.mixins import CreationInfoMixin, JSONEncodedDict
+from esloss.datamodel.mixins import (CompatibleStringArray, CreationInfoMixin,
+                                     JSONEncodedDict)
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
@@ -20,7 +21,7 @@ class EStatus(str, enum.Enum):
 class LossCalculation(ORMBase, CreationInfoMixin):
     """Calculation Parameters model"""
 
-    aggregateby = Column(String())
+    aggregateby = Column(CompatibleStringArray)
     config = Column(MutableDict.as_mutable(JSONEncodedDict))
     status = Column(Enum(EStatus), default=EStatus.PREPARED)
     description = Column(String())

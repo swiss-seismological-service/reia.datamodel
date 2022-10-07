@@ -1,18 +1,20 @@
-import functools
 import datetime
 import enum
+import functools
 import json
-from sqlalchemy import (
-    Column, Integer, Float, DateTime, String, TypeDecorator, VARCHAR)
+
+from sqlalchemy import (VARCHAR, Column, DateTime, Float, Integer, String,
+                        TypeDecorator)
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.mutable import MutableList
 from sqlalchemy.types import ARRAY, PickleType
-
 
 # SQLite has no ARRAY type. Since we will probably only work with sqlite
 # on a programmatic basis, it should be no problem to save the lists pickled
 CompatibleFloatArray = \
     ARRAY(Float).with_variant(MutableList.as_mutable(PickleType), 'sqlite')
+CompatibleStringArray = \
+    ARRAY(String).with_variant(MutableList.as_mutable(PickleType), 'sqlite')
 
 
 class JSONEncodedDict(TypeDecorator):
