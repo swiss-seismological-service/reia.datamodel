@@ -8,13 +8,13 @@ from sqlalchemy.sql.schema import Column, ForeignKey
 from sqlalchemy.sql.sqltypes import BigInteger, Enum, String
 
 
-class EStatus(enum.Enum):
-    PREPARED = 0
-    CREATED = 1
-    EXECUTING = 2
-    COMPLETE = 3
-    FAILED = 4
-    ABORTED = 5
+class EStatus(str, enum.Enum):
+    PREPARED = 'prepared'
+    CREATED = 'created'
+    EXECUTING = 'executing'
+    COMPLETE = 'complete'
+    FAILED = 'failed'
+    ABORTED = 'aborted'
 
 
 class LossCalculation(ORMBase, CreationInfoMixin):

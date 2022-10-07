@@ -9,11 +9,11 @@ from sqlalchemy.sql.sqltypes import BigInteger, Enum, Integer, String
 
 
 class ELossCategory(enum.Enum):
-    CONTENTS = 0
-    BUSINESSINTERRUPTION = 1
-    NONSTRUCTURAL = 2
-    OCCUPANTS = 3
-    STRUCTURAL = 4
+    CONTENTS = 'contents'
+    BUSINESSINTERRUPTION = 'businessinterruption'
+    NONSTRUCTURAL = 'nonstructural'
+    OCCUPANTS = 'occupants'
+    STRUCTURAL = 'structural'
 
 
 class LossValue(ORMBase, RealQuantityMixin('loss')):

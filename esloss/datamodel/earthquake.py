@@ -9,8 +9,8 @@ from sqlalchemy.sql.sqltypes import DateTime, Enum, Float, Integer, String
 
 
 class EEarthquakeType(enum.Enum):
-    SCENARIO = 0
-    NATURAL = 1
+    SCENARIO = 'scenario'
+    NATURAL = 'natural'
 
 
 class EarthquakeInformation(
