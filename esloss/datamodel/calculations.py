@@ -1,12 +1,13 @@
 import enum
 
-from esloss.datamodel.base import ORMBase
-from esloss.datamodel.mixins import (CompatibleStringArray, CreationInfoMixin,
-                                     JSONEncodedDict)
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
-from sqlalchemy.sql.sqltypes import BigInteger, Enum, String
+from sqlalchemy.sql.sqltypes import BigInteger, Enum, Float, String
+
+from esloss.datamodel.base import ORMBase
+from esloss.datamodel.mixins import (CompatibleStringArray, CreationInfoMixin,
+                                     JSONEncodedDict)
 
 
 class EStatus(str, enum.Enum):
@@ -18,41 +19,26 @@ class EStatus(str, enum.Enum):
     ABORTED = 'aborted'
 
 
-class LossCalculation(ORMBase, CreationInfoMixin):
-    """Calculation Parameters model"""
+class CalculationBranch(ORMBase):
+    "Calculation Branch Parameters model"
 
-    aggregateby = Column(CompatibleStringArray)
     config = Column(MutableDict.as_mutable(JSONEncodedDict))
     status = Column(Enum(EStatus), default=EStatus.PREPARED)
-    description = Column(String())
-
-    _assetcollection_oid = Column(BigInteger,
-                                  ForeignKey('loss_assetcollection._oid',
-                                             ondelete="RESTRICT"),
-                                  nullable=False)
-    assetcollection = relationship('AssetCollection',
-                                   back_populates='losscalculation')
-
-    _earthquakeinformation_oid = Column(BigInteger, ForeignKey(
-        'loss_earthquakeinformation._oid', ondelete='CASCADE'))
-    earthquakeinformation = relationship('EarthquakeInformation',
-                                         back_populates='losscalculation')
+    weight = Column(Float())
 
     _type = Column(String(25))
 
     __mapper_args__ = {
-        'polymorphic_identity': 'losscalculation',
+        'polymorphic_identity': 'calculationbranch',
         'polymorphic_on': _type,
     }
 
 
-class RiskCalculation(LossCalculation):
-    __tablename__ = 'loss_riskcalculation'
+class RiskCalculationBranch(CalculationBranch):
+    __tablename__ = 'loss_riskcalculationbranch'
 
-    _oid = Column(BigInteger, ForeignKey('loss_losscalculation._oid'),
+    _oid = Column(BigInteger, ForeignKey('loss_calculationbranch._oid'),
                   primary_key=True)
-
-    losses = relationship('LossValue', back_populates='riskcalculation')
 
     _occupantsvulnerabilitymodel_oid = Column(
         BigInteger,
@@ -99,6 +85,46 @@ class RiskCalculation(LossCalculation):
         'BusinessInterruptionVulnerabilityModel',
         backref='riskcalculation',
         foreign_keys=[_businessinterruptionvulnerabilitymodel_oid])
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'riskcalculationbranch'
+    }
+
+
+class LossCalculation(ORMBase, CreationInfoMixin):
+    """Calculation Parameters model"""
+
+    aggregateby = Column(CompatibleStringArray)
+    status = Column(Enum(EStatus), default=EStatus.PREPARED)
+    description = Column(String())
+
+    _assetcollection_oid = Column(BigInteger,
+                                  ForeignKey('loss_assetcollection._oid',
+                                             ondelete="RESTRICT"),
+                                  nullable=False)
+    assetcollection = relationship('AssetCollection',
+                                   back_populates='losscalculation')
+
+    _earthquakeinformation_oid = Column(BigInteger, ForeignKey(
+        'loss_earthquakeinformation._oid', ondelete='CASCADE'))
+    earthquakeinformation = relationship('EarthquakeInformation',
+                                         back_populates='losscalculation')
+
+    _type = Column(String(25))
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'losscalculation',
+        'polymorphic_on': _type,
+    }
+
+
+class RiskCalculation(LossCalculation):
+    __tablename__ = 'loss_riskcalculation'
+
+    _oid = Column(BigInteger, ForeignKey('loss_losscalculation._oid'),
+                  primary_key=True)
+
+    losses = relationship('LossValue', back_populates='riskcalculation')
 
     __mapper_args__ = {
         'polymorphic_identity': 'riskcalculation'
