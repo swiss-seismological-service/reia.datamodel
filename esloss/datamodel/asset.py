@@ -1,13 +1,12 @@
 from sqlalchemy import Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
-from sqlalchemy.sql.sqltypes import (
-    BigInteger, Integer, String, Boolean, Float)
+from sqlalchemy.sql.sqltypes import BigInteger, Boolean, Float, Integer, String
 
 from esloss.datamodel.base import ORMBase
-from esloss.datamodel.mixins import (
-    ClassificationMixin, CreationInfoMixin, PublicIdMixin)
 from esloss.datamodel.lossvalues import aggregatedloss_aggregationtag
+from esloss.datamodel.mixins import (ClassificationMixin, CreationInfoMixin,
+                                     PublicIdMixin)
 
 
 class AssetCollection(ORMBase,
@@ -36,8 +35,8 @@ class AssetCollection(ORMBase,
                              cascade='all, delete-orphan',
                              lazy='joined')
 
-    losscalculation = relationship('LossCalculation',
-                                   back_populates='assetcollection')
+    calculation = relationship('Calculation',
+                               back_populates='assetcollection')
 
     assets = relationship('Asset',
                           back_populates='assetcollection',
@@ -67,18 +66,16 @@ class CostType(ORMBase):
 
 
 asset_aggregationtag = Table(
-    'loss_asset_aggregation',
+    'loss_assoc_asset_aggregationtag',
     ORMBase.metadata,
-    Column('asset', ForeignKey(
-        'loss_asset._oid',
-        onupdate='CASCADE',
-        ondelete='CASCADE'),
-        primary_key=True),
-    Column('aggregationtag', ForeignKey(
-        'loss_aggregationtag._oid',
-        onupdate='CASCADE',
-        ondelete='CASCADE'),
-        primary_key=True),
+    Column('asset',
+           ForeignKey('loss_asset._oid',
+                      ondelete='CASCADE'),
+           primary_key=True),
+    Column('aggregationtag',
+           ForeignKey('loss_aggregationtag._oid',
+                      ondelete='CASCADE'),
+           primary_key=True),
 )
 
 
@@ -95,10 +92,10 @@ class Asset(ClassificationMixin('taxonomy'), ORMBase):
     transitoccupancy = Column(Float)
     businessinterruptionvalue = Column(Float)
 
-    aggregationtags = relationship(
-        'AggregationTag', secondary=asset_aggregationtag,
-        back_populates='assets',
-        lazy='joined')
+    aggregationtags = relationship('AggregationTag',
+                                   secondary=asset_aggregationtag,
+                                   back_populates='assets',
+                                   lazy='joined')
 
     _assetcollection_oid = Column(BigInteger,
                                   ForeignKey('loss_assetcollection._oid',
@@ -139,9 +136,9 @@ class AggregationTag(ORMBase):
     name = Column(String, nullable=False)
 
     # asset collection relationship
-    _assetcollection_oid = Column(
-        BigInteger,
-        ForeignKey('loss_assetcollection._oid', ondelete='CASCADE'))
+    _assetcollection_oid = Column(BigInteger,
+                                  ForeignKey('loss_assetcollection._oid',
+                                             ondelete='CASCADE'))
     assetcollection = relationship(
         'AssetCollection',
         back_populates='aggregationtags')

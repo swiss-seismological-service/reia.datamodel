@@ -1,7 +1,10 @@
 from esloss.datamodel.asset import (AggregationTag, Asset,  # noqa
                                     AssetCollection, CostType, Site)
-from esloss.datamodel.calculations import (DamageCalculation, EStatus,  # noqa
-                                           LossCalculation, RiskCalculation)
+from esloss.datamodel.calculations import Calculation  # noqa
+from esloss.datamodel.calculations import (DamageCalculation,  # noqa
+                                           DamageCalculationBranch, EStatus,
+                                           RiskCalculation,
+                                           RiskCalculationBranch)
 from esloss.datamodel.earthquake import EarthquakeInformation  # noqa
 from esloss.datamodel.earthquake import EEarthquakeType  # noqa
 from esloss.datamodel.lossvalues import (AggregatedLoss, ELossCategory,  # noqa

@@ -1,11 +1,12 @@
 import enum
 
-from esloss.datamodel.base import ORMBase
-from esloss.datamodel.mixins import CreationInfoMixin, RealQuantityMixin
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column
 from sqlalchemy.sql.sqltypes import DateTime, Enum, Float, Integer, String
+
+from esloss.datamodel.base import ORMBase
+from esloss.datamodel.mixins import CreationInfoMixin, RealQuantityMixin
 
 
 class EEarthquakeType(enum.Enum):
@@ -30,9 +31,9 @@ class EarthquakeInformation(
                   default=EEarthquakeType.NATURAL,
                   nullable=False)
 
-    losscalculation = relationship('LossCalculation',
-                                   back_populates='earthquakeinformation',
-                                   passive_deletes=True,
-                                   cascade='all, delete-orphan')
+    calculation = relationship('Calculation',
+                               back_populates='earthquakeinformation',
+                               passive_deletes=True,
+                               cascade='all, delete-orphan')
 
     __table_args__ = (UniqueConstraint('eventid', name='eventid_unique'),)

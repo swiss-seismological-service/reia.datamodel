@@ -20,7 +20,11 @@ class EStatus(str, enum.Enum):
 
 
 class CalculationBranch(ORMBase):
-    "Calculation Branch Parameters model"
+    """
+    Calculation Branch Parameters model
+
+    Instance of SQLAlchemy Joined Table Inheritance
+    """
 
     config = Column(MutableDict.as_mutable(JSONEncodedDict))
     status = Column(Enum(EStatus), default=EStatus.PREPARED)
@@ -39,6 +43,15 @@ class RiskCalculationBranch(CalculationBranch):
 
     _oid = Column(BigInteger, ForeignKey('loss_calculationbranch._oid'),
                   primary_key=True)
+
+    _riskcalculation_oid = Column(BigInteger,
+                                  ForeignKey('loss_calculation._oid',
+                                             ondelete='CASCADE'))
+    riskcalculation = relationship('RiskCalculation',
+                                   back_populates='calculationbranches')
+
+    losses = relationship('LossValue',
+                          back_populates='riskcalculation')
 
     _occupantsvulnerabilitymodel_oid = Column(
         BigInteger,
@@ -91,8 +104,25 @@ class RiskCalculationBranch(CalculationBranch):
     }
 
 
-class LossCalculation(ORMBase, CreationInfoMixin):
-    """Calculation Parameters model"""
+class DamageCalculationBranch(CalculationBranch):
+    __tablename__ = 'loss_damagecalculationbranch'
+
+    _oid = Column(BigInteger, ForeignKey('loss_calculationbranch._oid'),
+                  primary_key=True)
+
+    _damagecalculation_oid = Column(BigInteger,
+                                    ForeignKey('loss_calculation._oid',
+                                               ondelete='CASCADE'))
+    damagecalculation = relationship('DamageCalculation',
+                                     back_populates='calculationbranches')
+
+
+class Calculation(ORMBase, CreationInfoMixin):
+    """
+    Calculation Parameters model
+
+    Instance of SQLAlchemy Single Table Inheritance
+    """
 
     aggregateby = Column(CompatibleStringArray)
     status = Column(Enum(EStatus), default=EStatus.PREPARED)
@@ -103,39 +133,46 @@ class LossCalculation(ORMBase, CreationInfoMixin):
                                              ondelete="RESTRICT"),
                                   nullable=False)
     assetcollection = relationship('AssetCollection',
-                                   back_populates='losscalculation')
+                                   back_populates='calculation')
 
     _earthquakeinformation_oid = Column(BigInteger, ForeignKey(
         'loss_earthquakeinformation._oid', ondelete='CASCADE'))
     earthquakeinformation = relationship('EarthquakeInformation',
-                                         back_populates='losscalculation')
+                                         back_populates='calculation')
 
     _type = Column(String(25))
 
     __mapper_args__ = {
-        'polymorphic_identity': 'losscalculation',
+        'polymorphic_identity': 'calculation',
         'polymorphic_on': _type,
     }
 
 
-class RiskCalculation(LossCalculation):
-    __tablename__ = 'loss_riskcalculation'
+class RiskCalculation(Calculation):
+    __tablename__ = None
 
-    _oid = Column(BigInteger, ForeignKey('loss_losscalculation._oid'),
-                  primary_key=True)
+    losses = relationship('LossValue',
+                          back_populates='riskcalculation',
+                          passive_deletes=True,
+                          cascade='all, delete-orphan')
 
-    losses = relationship('LossValue', back_populates='riskcalculation')
+    calculationbranches = relationship('RiskCalculationBranch',
+                                       back_populates='riskcalculation',
+                                       passive_deletes=True,
+                                       cascade='all, delete-orphan')
 
     __mapper_args__ = {
         'polymorphic_identity': 'riskcalculation'
     }
 
 
-class DamageCalculation(LossCalculation):
-    __tablename__ = 'loss_damagecalculation'
+class DamageCalculation(Calculation):
+    __tablename__ = None
 
-    _oid = Column(BigInteger, ForeignKey('loss_losscalculation._oid'),
-                  primary_key=True)
+    calculationbranches = relationship('DamageCalculationBranch',
+                                       back_populates='damagecalculation',
+                                       passive_deletes=True,
+                                       cascade='all, delete-orphan')
 
     __mapper_args__ = {
         'polymorphic_identity': 'damagecalculation'
