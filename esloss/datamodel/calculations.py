@@ -44,14 +44,14 @@ class RiskCalculationBranch(CalculationBranch):
     _oid = Column(BigInteger, ForeignKey('loss_calculationbranch._oid'),
                   primary_key=True)
 
-    _riskcalculation_oid = Column(BigInteger,
-                                  ForeignKey('loss_calculation._oid',
-                                             ondelete='CASCADE'))
+    _calculation_oid = Column(BigInteger,
+                              ForeignKey('loss_calculation._oid',
+                                         ondelete='CASCADE'))
     riskcalculation = relationship('RiskCalculation',
-                                   back_populates='calculationbranches')
+                                   back_populates='riskcalculationbranches')
 
     losses = relationship('LossValue',
-                          back_populates='riskcalculation')
+                          back_populates='riskcalculationbranch')
 
     _occupantsvulnerabilitymodel_oid = Column(
         BigInteger,
@@ -110,11 +110,11 @@ class DamageCalculationBranch(CalculationBranch):
     _oid = Column(BigInteger, ForeignKey('loss_calculationbranch._oid'),
                   primary_key=True)
 
-    _damagecalculation_oid = Column(BigInteger,
-                                    ForeignKey('loss_calculation._oid',
-                                               ondelete='CASCADE'))
+    _calculation_oid = Column(BigInteger,
+                              ForeignKey('loss_calculation._oid',
+                                         ondelete='CASCADE'))
     damagecalculation = relationship('DamageCalculation',
-                                     back_populates='calculationbranches')
+                                     back_populates='damagecalculationbranches')
 
 
 class Calculation(ORMBase, CreationInfoMixin):
@@ -156,10 +156,10 @@ class RiskCalculation(Calculation):
                           passive_deletes=True,
                           cascade='all, delete-orphan')
 
-    calculationbranches = relationship('RiskCalculationBranch',
-                                       back_populates='riskcalculation',
-                                       passive_deletes=True,
-                                       cascade='all, delete-orphan')
+    riskcalculationbranches = relationship('RiskCalculationBranch',
+                                           back_populates='riskcalculation',
+                                           passive_deletes=True,
+                                           cascade='all, delete-orphan')
 
     __mapper_args__ = {
         'polymorphic_identity': 'riskcalculation'
@@ -169,10 +169,10 @@ class RiskCalculation(Calculation):
 class DamageCalculation(Calculation):
     __tablename__ = None
 
-    calculationbranches = relationship('DamageCalculationBranch',
-                                       back_populates='damagecalculation',
-                                       passive_deletes=True,
-                                       cascade='all, delete-orphan')
+    damagecalculationbranches = relationship('DamageCalculationBranch',
+                                             back_populates='damagecalculation',
+                                             passive_deletes=True,
+                                             cascade='all, delete-orphan')
 
     __mapper_args__ = {
         'polymorphic_identity': 'damagecalculation'
