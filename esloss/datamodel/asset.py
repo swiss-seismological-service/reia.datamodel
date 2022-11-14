@@ -9,10 +9,10 @@ from esloss.datamodel.mixins import (ClassificationMixin, CreationInfoMixin,
                                      PublicIdMixin)
 
 
-class AssetCollection(ORMBase,
-                      PublicIdMixin,
-                      CreationInfoMixin,
-                      ClassificationMixin('taxonomy')):
+class ExposureModel(ORMBase,
+                    PublicIdMixin,
+                    CreationInfoMixin,
+                    ClassificationMixin('taxonomy')):
     '''Asset Collection model'''
     name = Column(String)
     category = Column(String)
@@ -30,25 +30,25 @@ class AssetCollection(ORMBase,
                               default=False,
                               nullable=False)
 
-    costtypes = relationship('CostType', back_populates='assetcollection',
+    costtypes = relationship('CostType', back_populates='exposuremodel',
                              passive_deletes=True,
                              cascade='all, delete-orphan',
                              lazy='joined')
 
     calculation = relationship('Calculation',
-                               back_populates='assetcollection')
+                               back_populates='exposuremodel')
 
     assets = relationship('Asset',
-                          back_populates='assetcollection',
+                          back_populates='exposuremodel',
                           passive_deletes=True,
                           cascade='all, delete-orphan')
     sites = relationship('Site',
-                         back_populates='assetcollection',
+                         back_populates='exposuremodel',
                          passive_deletes=True,
                          cascade='all, delete-orphan')
 
     aggregationtags = relationship('AggregationTag',
-                                   back_populates='assetcollection',
+                                   back_populates='exposuremodel',
                                    passive_deletes=True,
                                    cascade='all, delete-orphan')
 
@@ -58,10 +58,10 @@ class CostType(ORMBase):
     type = Column(String)
     unit = Column(String)
 
-    _assetcollection_oid = Column(BigInteger, ForeignKey(
-        'loss_assetcollection._oid', ondelete='CASCADE'))
-    assetcollection = relationship(
-        'AssetCollection',
+    _exposuremodel_oid = Column(BigInteger, ForeignKey(
+        'loss_exposuremodel._oid', ondelete='CASCADE'))
+    exposuremodel = relationship(
+        'ExposureModel',
         back_populates='costtypes')
 
 
@@ -97,11 +97,11 @@ class Asset(ClassificationMixin('taxonomy'), ORMBase):
                                    back_populates='assets',
                                    lazy='joined')
 
-    _assetcollection_oid = Column(BigInteger,
-                                  ForeignKey('loss_assetcollection._oid',
-                                             ondelete='CASCADE'))
-    assetcollection = relationship('AssetCollection',
-                                   back_populates='assets')
+    _exposuremodel_oid = Column(BigInteger,
+                                ForeignKey('loss_exposuremodel._oid',
+                                           ondelete='CASCADE'))
+    exposuremodel = relationship('ExposureModel',
+                                 back_populates='assets')
 
     # site relationship
     _site_oid = Column(BigInteger,
@@ -119,11 +119,11 @@ class Site(ORMBase):
     latitude = Column(Float, nullable=False)
 
     # asset collection relationship
-    _assetcollection_oid = Column(
+    _exposuremodel_oid = Column(
         BigInteger,
-        ForeignKey('loss_assetcollection._oid', ondelete='CASCADE'))
-    assetcollection = relationship(
-        'AssetCollection',
+        ForeignKey('loss_exposuremodel._oid', ondelete='CASCADE'))
+    exposuremodel = relationship(
+        'ExposureModel',
         back_populates='sites')
 
     assets = relationship(
@@ -136,11 +136,11 @@ class AggregationTag(ORMBase):
     name = Column(String, nullable=False)
 
     # asset collection relationship
-    _assetcollection_oid = Column(BigInteger,
-                                  ForeignKey('loss_assetcollection._oid',
-                                             ondelete='CASCADE'))
-    assetcollection = relationship(
-        'AssetCollection',
+    _exposuremodel_oid = Column(BigInteger,
+                                ForeignKey('loss_exposuremodel._oid',
+                                           ondelete='CASCADE'))
+    exposuremodel = relationship(
+        'ExposureModel',
         back_populates='aggregationtags')
 
     assets = relationship(

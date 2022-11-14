@@ -128,12 +128,12 @@ class Calculation(ORMBase, CreationInfoMixin):
     status = Column(Enum(EStatus), default=EStatus.PREPARED)
     description = Column(String())
 
-    _assetcollection_oid = Column(BigInteger,
-                                  ForeignKey('loss_assetcollection._oid',
-                                             ondelete="RESTRICT"),
-                                  nullable=False)
-    assetcollection = relationship('AssetCollection',
-                                   back_populates='calculation')
+    _exposuremodel_oid = Column(BigInteger,
+                                ForeignKey('loss_exposuremodel._oid',
+                                           ondelete="RESTRICT"),
+                                nullable=False)
+    exposuremodel = relationship('ExposureModel',
+                                 back_populates='calculation')
 
     _earthquakeinformation_oid = Column(BigInteger, ForeignKey(
         'loss_earthquakeinformation._oid', ondelete='CASCADE'))

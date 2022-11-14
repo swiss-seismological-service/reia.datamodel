@@ -1,8 +1,8 @@
-from esloss.datamodel.asset import (AggregationTag, Asset,  # noqa
-                                    AssetCollection, CostType, Site)
+from esloss.datamodel.asset import (AggregationTag, Asset, CostType,  # noqa
+                                    ExposureModel, Site)
 from esloss.datamodel.calculations import Calculation  # noqa
-from esloss.datamodel.calculations import (DamageCalculation,  # noqa
-                                           DamageCalculationBranch, EStatus,
+from esloss.datamodel.calculations import DamageCalculation  # noqa
+from esloss.datamodel.calculations import (DamageCalculationBranch, EStatus,
                                            RiskCalculation,
                                            RiskCalculationBranch)
 from esloss.datamodel.earthquake import EarthquakeInformation  # noqa
