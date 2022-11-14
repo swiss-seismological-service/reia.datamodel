@@ -4,7 +4,7 @@ from sqlalchemy.sql.schema import Column, ForeignKey
 from sqlalchemy.sql.sqltypes import BigInteger, Boolean, Float, Integer, String
 
 from esloss.datamodel.base import ORMBase
-from esloss.datamodel.lossvalues import aggregatedloss_aggregationtag
+from esloss.datamodel.lossvalues import lossvalue_aggregationtag
 from esloss.datamodel.mixins import (ClassificationMixin, CreationInfoMixin,
                                      PublicIdMixin)
 
@@ -148,6 +148,6 @@ class AggregationTag(ORMBase):
         back_populates='aggregationtags')
 
     losses = relationship(
-        'AggregatedLoss', secondary=aggregatedloss_aggregationtag,
+        'LossValue', secondary=lossvalue_aggregationtag,
         back_populates='aggregationtags'
     )
