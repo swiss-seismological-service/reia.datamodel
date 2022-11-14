@@ -35,8 +35,8 @@ class ExposureModel(ORMBase,
                              cascade='all, delete-orphan',
                              lazy='joined')
 
-    calculation = relationship('Calculation',
-                               back_populates='exposuremodel')
+    calculationbranch = relationship('CalculationBranch',
+                                     back_populates='exposuremodel')
 
     assets = relationship('Asset',
                           back_populates='exposuremodel',
@@ -46,11 +46,6 @@ class ExposureModel(ORMBase,
                          back_populates='exposuremodel',
                          passive_deletes=True,
                          cascade='all, delete-orphan')
-
-    aggregationtags = relationship('AggregationTag',
-                                   back_populates='exposuremodel',
-                                   passive_deletes=True,
-                                   cascade='all, delete-orphan')
 
 
 class CostType(ORMBase):
@@ -134,14 +129,6 @@ class Site(ORMBase):
 class AggregationTag(ORMBase):
     type = Column(String, nullable=False)
     name = Column(String, nullable=False)
-
-    # asset collection relationship
-    _exposuremodel_oid = Column(BigInteger,
-                                ForeignKey('loss_exposuremodel._oid',
-                                           ondelete='CASCADE'))
-    exposuremodel = relationship(
-        'ExposureModel',
-        back_populates='aggregationtags')
 
     assets = relationship(
         'Asset', secondary=asset_aggregationtag,

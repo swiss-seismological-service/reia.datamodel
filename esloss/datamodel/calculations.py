@@ -30,6 +30,13 @@ class CalculationBranch(ORMBase):
     status = Column(Enum(EStatus), default=EStatus.PREPARED)
     weight = Column(Float())
 
+    _exposuremodel_oid = Column(BigInteger,
+                                ForeignKey('loss_exposuremodel._oid',
+                                           ondelete="RESTRICT"),
+                                nullable=False)
+    exposuremodel = relationship('ExposureModel',
+                                 back_populates='calculationbranch')
+
     _type = Column(String(25))
 
     __mapper_args__ = {
@@ -127,13 +134,6 @@ class Calculation(ORMBase, CreationInfoMixin):
     aggregateby = Column(CompatibleStringArray)
     status = Column(Enum(EStatus), default=EStatus.PREPARED)
     description = Column(String())
-
-    _exposuremodel_oid = Column(BigInteger,
-                                ForeignKey('loss_exposuremodel._oid',
-                                           ondelete="RESTRICT"),
-                                nullable=False)
-    exposuremodel = relationship('ExposureModel',
-                                 back_populates='calculation')
 
     _earthquakeinformation_oid = Column(BigInteger, ForeignKey(
         'loss_earthquakeinformation._oid', ondelete='CASCADE'))
