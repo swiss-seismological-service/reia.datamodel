@@ -122,6 +122,9 @@ class DamageCalculationBranch(CalculationBranch):
                                          ondelete='CASCADE'))
     damagecalculation = relationship('DamageCalculation',
                                      back_populates='damagecalculationbranches')
+    __mapper_args__ = {
+        'polymorphic_identity': 'damagecalculationbranch'
+    }
 
 
 class Calculation(ORMBase, CreationInfoMixin):

@@ -1,5 +1,5 @@
-from sqlalchemy import Table
-from sqlalchemy.orm import relationship
+from sqlalchemy import Table, delete, event
+from sqlalchemy.orm import Session, relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
 from sqlalchemy.sql.sqltypes import BigInteger, Boolean, Float, Integer, String
 
@@ -138,3 +138,29 @@ class AggregationTag(ORMBase):
         'LossValue', secondary=lossvalue_aggregationtag,
         back_populates='aggregationtags'
     )
+
+# Make sure that Aggregationtags which don't have a parent anymore
+# (meaning neither referenced by a LossValue nor an Asset) are deleted
+
+
+@event.listens_for(Session, 'do_orm_execute', once=True)
+def delete_tag_orphans_execute(orm_execute_state):
+    if orm_execute_state.is_delete:
+
+        orm_execute_state.invoke_statement()
+
+        stmt = delete(AggregationTag).filter(
+            ~AggregationTag.losses.any(),
+            ~AggregationTag.assets.any()).execution_options(
+            synchronize_session=False)
+        orm_execute_state.session.execute(stmt)
+
+
+@event.listens_for(Session, 'after_flush')
+def delete_tag_orphans_session(session, ctx):
+    if session.deleted:
+        session.query(AggregationTag).\
+            filter(
+            ~AggregationTag.losses.any(),
+            ~AggregationTag.assets.any()).\
+            delete(synchronize_session=False)

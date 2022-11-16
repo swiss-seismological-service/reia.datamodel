@@ -1,17 +1,16 @@
 import enum
 
+from esloss.datamodel.base import ORMBase
+from esloss.datamodel.mixins import RealQuantityMixin
 from sqlalchemy import Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
 from sqlalchemy.sql.sqltypes import BigInteger, Enum, Float, Integer
 
-from esloss.datamodel.base import ORMBase
-from esloss.datamodel.mixins import RealQuantityMixin
-
 
 class ELossCategory(enum.Enum):
     CONTENTS = 'contents'
-    BUSINESSINTERRUPTION = 'businessinterruption'
+    BUSINESS_INTERRUPTION = 'businessinterruption'
     NONSTRUCTURAL = 'nonstructural'
     OCCUPANTS = 'occupants'
     STRUCTURAL = 'structural'
