@@ -4,7 +4,7 @@ from sqlalchemy.sql.schema import Column, ForeignKey
 from sqlalchemy.sql.sqltypes import BigInteger, Boolean, Float, Integer, String
 
 from esloss.datamodel.base import ORMBase
-from esloss.datamodel.lossvalues import lossvalue_aggregationtag
+from esloss.datamodel.lossvalues import riskvalue_aggregationtag
 from esloss.datamodel.mixins import (ClassificationMixin, CreationInfoMixin,
                                      PublicIdMixin)
 
@@ -134,8 +134,8 @@ class AggregationTag(ORMBase):
         'Asset', secondary=asset_aggregationtag,
         back_populates='aggregationtags')
 
-    losses = relationship(
-        'LossValue', secondary=lossvalue_aggregationtag,
+    riskvalues = relationship(
+        'RiskValue', secondary=riskvalue_aggregationtag,
         back_populates='aggregationtags'
     )
 
@@ -150,7 +150,7 @@ def delete_tag_orphans_execute(orm_execute_state):
         orm_execute_state.invoke_statement()
 
         stmt = delete(AggregationTag).filter(
-            ~AggregationTag.losses.any(),
+            ~AggregationTag.riskvalues.any(),
             ~AggregationTag.assets.any()).execution_options(
             synchronize_session=False)
         orm_execute_state.session.execute(stmt)
@@ -161,6 +161,6 @@ def delete_tag_orphans_session(session, ctx):
     if session.deleted:
         session.query(AggregationTag).\
             filter(
-            ~AggregationTag.losses.any(),
+            ~AggregationTag.riskvalues.any(),
             ~AggregationTag.assets.any()).\
             delete(synchronize_session=False)

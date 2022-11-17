@@ -1,11 +1,12 @@
 import enum
 
-from esloss.datamodel.base import ORMBase
-from esloss.datamodel.mixins import RealQuantityMixin
 from sqlalchemy import Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
-from sqlalchemy.sql.sqltypes import BigInteger, Enum, Float, Integer
+from sqlalchemy.sql.sqltypes import BigInteger, Enum, Float, Integer, String
+
+from esloss.datamodel.base import ORMBase
+from esloss.datamodel.mixins import RealQuantityMixin
 
 
 class ELossCategory(enum.Enum):
@@ -16,11 +17,11 @@ class ELossCategory(enum.Enum):
     STRUCTURAL = 'structural'
 
 
-lossvalue_aggregationtag = Table(
-    'loss_assoc_lossvalue_aggregationtag',
+riskvalue_aggregationtag = Table(
+    'loss_assoc_riskvalue_aggregationtag',
     ORMBase.metadata,
-    Column('lossvalue', ForeignKey(
-        'loss_lossvalue._oid',
+    Column('riskvalue', ForeignKey(
+        'loss_riskvalue._oid',
         ondelete='CASCADE'),
         primary_key=True),
     Column('aggregationtag', ForeignKey(
@@ -30,23 +31,33 @@ lossvalue_aggregationtag = Table(
 )
 
 
-class LossValue(ORMBase, RealQuantityMixin('loss')):
-    '''Loss Value'''
+class RiskValue(ORMBase):
 
     # id of the realization
     eventid = Column(Integer, nullable=False)
     losscategory = Column(Enum(ELossCategory), nullable=False)
     weight = Column(Float)
 
+    _calculation_oid = Column(BigInteger,
+                              ForeignKey('loss_calculation._oid',
+                                         ondelete='CASCADE'),
+                              nullable=False)
     aggregationtags = relationship('AggregationTag',
-                                   secondary=lossvalue_aggregationtag,
-                                   back_populates='losses',
+                                   secondary=riskvalue_aggregationtag,
+                                   back_populates='riskvalues',
                                    lazy='joined')
 
-    _riskcalculation_oid = Column(BigInteger,
-                                  ForeignKey('loss_calculation._oid',
-                                             ondelete='CASCADE'),
-                                  nullable=False)
+    _type = Column(String(25))
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'riskvalue',
+        'polymorphic_on': _type,
+    }
+
+
+class LossValue(RiskValue, RealQuantityMixin('loss', optional=True)):
+    __tablename__ = None
+
     riskcalculation = relationship('RiskCalculation',
                                    back_populates='losses')
 
@@ -56,3 +67,26 @@ class LossValue(ORMBase, RealQuantityMixin('loss')):
                                             ondelete='SET NULL'))
     riskcalculationbranch = relationship('RiskCalculationBranch',
                                          back_populates='losses')
+    __mapper_args__ = {
+        'polymorphic_identity': 'lossvalue'
+    }
+
+
+class DamageValue(RiskValue,
+                  RealQuantityMixin('dg1', optional=True),
+                  RealQuantityMixin('dg2', optional=True),
+                  RealQuantityMixin('dg3', optional=True),
+                  RealQuantityMixin('dg4', optional=True),
+                  RealQuantityMixin('dg5', optional=True)):
+    __tablename__ = None
+
+    damagecalculation = relationship('DamageCalculation',
+                                     back_populates='damages')
+
+    _damagecalculationbranch_oid = Column(BigInteger, ForeignKey(
+        'loss_damagecalculationbranch._oid', ondelete='SET NULL'))
+    damagecalculationbranch = relationship('DamageCalculationBranch',
+                                           back_populates='damages')
+    __mapper_args__ = {
+        'polymorphic_identity': 'damagevalue'
+    }

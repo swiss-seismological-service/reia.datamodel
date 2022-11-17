@@ -1,5 +1,6 @@
 import enum
 
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
@@ -17,6 +18,26 @@ class EStatus(str, enum.Enum):
     COMPLETE = 'complete'
     FAILED = 'failed'
     ABORTED = 'aborted'
+
+
+class EEarthquakeType(enum.Enum):
+    SCENARIO = 'scenario'
+    NATURAL = 'natural'
+
+
+class EarthquakeInformation(ORMBase, CreationInfoMixin):
+    """Calculation Parameters model"""
+    originid = Column(String, nullable=False)
+    type = Column(Enum(EEarthquakeType),
+                  default=EEarthquakeType.NATURAL,
+                  nullable=False)
+
+    calculation = relationship('Calculation',
+                               back_populates='earthquakeinformation',
+                               passive_deletes=True,
+                               cascade='all, delete-orphan')
+
+    __table_args__ = (UniqueConstraint('originid', name='originid_unique'),)
 
 
 class CalculationBranch(ORMBase):
@@ -117,6 +138,9 @@ class DamageCalculationBranch(CalculationBranch):
     _oid = Column(BigInteger, ForeignKey('loss_calculationbranch._oid'),
                   primary_key=True)
 
+    damages = relationship('DamageValue',
+                           back_populates='damagecalculationbranch')
+
     _calculation_oid = Column(BigInteger,
                               ForeignKey('loss_calculation._oid',
                                          ondelete='CASCADE'))
@@ -171,6 +195,11 @@ class RiskCalculation(Calculation):
 
 class DamageCalculation(Calculation):
     __tablename__ = None
+
+    damages = relationship('DamageValue',
+                           back_populates='damagecalculation',
+                           passive_deletes=True,
+                           cascade='all, delete-orphan')
 
     damagecalculationbranches = relationship('DamageCalculationBranch',
                                              back_populates='damagecalculation',
