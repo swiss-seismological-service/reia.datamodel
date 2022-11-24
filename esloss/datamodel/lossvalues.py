@@ -58,14 +58,14 @@ class RiskValue(ORMBase):
 class LossValue(RiskValue, RealQuantityMixin('loss', optional=True)):
     __tablename__ = None
 
-    riskcalculation = relationship('RiskCalculation',
+    losscalculation = relationship('LossCalculation',
                                    back_populates='losses')
 
-    _riskcalculationbranch_oid = Column(BigInteger,
+    _losscalculationbranch_oid = Column(BigInteger,
                                         ForeignKey(
-                                            'loss_riskcalculationbranch._oid',
+                                            'loss_losscalculationbranch._oid',
                                             ondelete='SET NULL'))
-    riskcalculationbranch = relationship('RiskCalculationBranch',
+    losscalculationbranch = relationship('LossCalculationBranch',
                                          back_populates='losses')
     __mapper_args__ = {
         'polymorphic_identity': 'lossvalue'

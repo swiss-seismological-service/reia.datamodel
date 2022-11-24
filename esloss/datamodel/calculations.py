@@ -66,8 +66,8 @@ class CalculationBranch(ORMBase):
     }
 
 
-class RiskCalculationBranch(CalculationBranch):
-    __tablename__ = 'loss_riskcalculationbranch'
+class LossCalculationBranch(CalculationBranch):
+    __tablename__ = 'loss_losscalculationbranch'
 
     _oid = Column(BigInteger, ForeignKey('loss_calculationbranch._oid'),
                   primary_key=True)
@@ -75,11 +75,11 @@ class RiskCalculationBranch(CalculationBranch):
     _calculation_oid = Column(BigInteger,
                               ForeignKey('loss_calculation._oid',
                                          ondelete='CASCADE'))
-    riskcalculation = relationship('RiskCalculation',
-                                   back_populates='riskcalculationbranches')
+    losscalculation = relationship('LossCalculation',
+                                   back_populates='losscalculationbranches')
 
     losses = relationship('LossValue',
-                          back_populates='riskcalculationbranch')
+                          back_populates='losscalculationbranch')
 
     _occupantsvulnerabilitymodel_oid = Column(
         BigInteger,
@@ -104,31 +104,31 @@ class RiskCalculationBranch(CalculationBranch):
 
     occupantsvulnerabilitymodel = relationship(
         'OccupantsVulnerabilityModel',
-        backref='riskcalculation',
+        backref='losscalculation',
         foreign_keys=[_occupantsvulnerabilitymodel_oid])
 
     contentsvulnerabilitymodel = relationship(
         'ContentsVulnerabilityModel',
-        backref='riskcalculation',
+        backref='losscalculation',
         foreign_keys=[_contentsvulnerabilitymodel_oid])
 
     structuralvulnerabilitymodel = relationship(
         'StructuralVulnerabilityModel',
-        backref='riskcalculation',
+        backref='losscalculation',
         foreign_keys=[_structuralvulnerabilitymodel_oid])
 
     nonstructuralvulnerabilitymodel = relationship(
         'NonstructuralVulnerabilityModel',
-        backref='riskcalculation',
+        backref='losscalculation',
         foreign_keys=[_nonstructuralvulnerabilitymodel_oid])
 
     businessinterruptionvulnerabilitymodel = relationship(
         'BusinessInterruptionVulnerabilityModel',
-        backref='riskcalculation',
+        backref='losscalculation',
         foreign_keys=[_businessinterruptionvulnerabilitymodel_oid])
 
     __mapper_args__ = {
-        'polymorphic_identity': 'riskcalculationbranch'
+        'polymorphic_identity': 'losscalculationbranch'
     }
 
 
@@ -175,21 +175,21 @@ class Calculation(ORMBase, CreationInfoMixin):
     }
 
 
-class RiskCalculation(Calculation):
+class LossCalculation(Calculation):
     __tablename__ = None
 
     losses = relationship('LossValue',
-                          back_populates='riskcalculation',
+                          back_populates='losscalculation',
                           passive_deletes=True,
                           cascade='all, delete-orphan')
 
-    riskcalculationbranches = relationship('RiskCalculationBranch',
-                                           back_populates='riskcalculation',
+    losscalculationbranches = relationship('LossCalculationBranch',
+                                           back_populates='losscalculation',
                                            passive_deletes=True,
                                            cascade='all, delete-orphan')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'riskcalculation'
+        'polymorphic_identity': 'losscalculation'
     }
 
 

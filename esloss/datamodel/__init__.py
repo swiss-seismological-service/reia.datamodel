@@ -6,8 +6,8 @@ from esloss.datamodel.calculations import (Calculation, CalculationBranch,
                                            DamageCalculationBranch,
                                            EarthquakeInformation,
                                            EEarthquakeType, EStatus,
-                                           RiskCalculation,
-                                           RiskCalculationBranch)
+                                           LossCalculation,
+                                           LossCalculationBranch)
 from esloss.datamodel.lossvalues import (DamageValue, ELossCategory, LossValue,
                                          RiskValue, riskvalue_aggregationtag)
 from esloss.datamodel.vulnerability import (
