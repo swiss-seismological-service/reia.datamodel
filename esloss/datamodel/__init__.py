@@ -1,6 +1,6 @@
 # flake8: noqa
 from esloss.datamodel.asset import (AggregationTag, Asset, CostType,
-                                    ExposureModel, Site)
+                                    ExposureModel, Site, asset_aggregationtag)
 from esloss.datamodel.calculations import (Calculation, CalculationBranch,
                                            DamageCalculation,
                                            DamageCalculationBranch,
