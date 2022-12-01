@@ -3,10 +3,10 @@ from sqlalchemy.orm import Session, relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
 from sqlalchemy.sql.sqltypes import BigInteger, Boolean, Float, Integer, String
 
-from esloss.datamodel.base import ORMBase
-from esloss.datamodel.lossvalues import riskvalue_aggregationtag
-from esloss.datamodel.mixins import (ClassificationMixin, CreationInfoMixin,
-                                     PublicIdMixin)
+from reia.datamodel.base import ORMBase
+from reia.datamodel.lossvalues import riskvalue_aggregationtag
+from reia.datamodel.mixins import (ClassificationMixin, CreationInfoMixin,
+                                   PublicIdMixin)
 
 
 class ExposureModel(ORMBase,

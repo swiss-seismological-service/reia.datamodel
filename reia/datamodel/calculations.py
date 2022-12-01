@@ -6,9 +6,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
 from sqlalchemy.sql.sqltypes import BigInteger, Enum, Float, String
 
-from esloss.datamodel.base import ORMBase
-from esloss.datamodel.mixins import (CompatibleStringArray, CreationInfoMixin,
-                                     JSONEncodedDict)
+from reia.datamodel.base import ORMBase
+from reia.datamodel.mixins import (CompatibleStringArray, CreationInfoMixin,
+                                   JSONEncodedDict)
 
 
 class EStatus(str, enum.Enum):

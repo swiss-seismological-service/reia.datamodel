@@ -1,6 +1,6 @@
 # Copyright 2018, ETH Zurich - Swiss Seismological Service SED
 '''
-setup.py for esloss.datamodel
+setup.py for reia.datamodel
 '''
 
 import sys
@@ -22,11 +22,11 @@ _extras_require = {'dev': [
     'autopep8>=1.6.0'
 ]}
 
-_name = 'esloss.datamodel'
+_name = 'reia.datamodel'
 _version = 0.1
 _description = ('Datamodel for Event Specific Loss calculations.')
 
-_packages = ['esloss.datamodel']
+_packages = ['reia.datamodel']
 
 _entry_points = {}
 

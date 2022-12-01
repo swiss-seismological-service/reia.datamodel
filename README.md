@@ -1,2 +1,3 @@
-# esloss.datamodel
-Datamodel and utilities for event specific loss calculations
+# reia.datamodel
+
+Datamodel for the SED Rapid Earthquake Impact Assessment software.
