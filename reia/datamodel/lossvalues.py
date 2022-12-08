@@ -28,12 +28,16 @@ riskvalue_aggregationtag = Table(
         'loss_aggregationtag._oid',
         ondelete='CASCADE'),
         primary_key=True),
-    postgresql_partition_by='LIST (aggregationtag)'
+    Column('losscategory', ELossCategory),
+    Column('_calculation_oid', BigInteger),
+    postgresql_partition_by='LIST (_calculation_oid)'
 )
 
 
 class RiskValue(ORMBase):
-
+    __table_args__ = {
+        'postgresql_partition_by': 'LIST (_calculation_oid)'
+    }
     # id of the realization
     eventid = Column(Integer, nullable=False)
     losscategory = Column(Enum(ELossCategory), nullable=False)
