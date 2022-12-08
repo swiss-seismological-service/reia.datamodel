@@ -28,6 +28,7 @@ riskvalue_aggregationtag = Table(
         'loss_aggregationtag._oid',
         ondelete='CASCADE'),
         primary_key=True),
+    postgresql_partition_by='LIST (aggregationtag)'
 )
 
 
