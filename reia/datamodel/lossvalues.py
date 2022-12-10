@@ -48,7 +48,7 @@ class RiskValue(ORMBase):
                         'loss_riskvalue.c.losscategory']
     }
 
-    _oid = Column(BigInteger, primary_key=True)
+    _oid = Column(BigInteger, autoincrement=True, primary_key=True)
     # id of the realization
     eventid = Column(Integer, nullable=False)
     losscategory = Column(Enum(ELossCategory), nullable=False, primary_key=True)
