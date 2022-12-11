@@ -5,8 +5,8 @@ from reia.datamodel.calculations import (Calculation, CalculationBranch,
                                          DamageCalculation,
                                          DamageCalculationBranch,
                                          EarthquakeInformation,
-                                         EEarthquakeType, EStatus,
-                                         LossCalculation,
+                                         ECalculationType, EEarthquakeType,
+                                         EStatus, LossCalculation,
                                          LossCalculationBranch)
 from reia.datamodel.lossvalues import (DamageValue, ELossCategory, LossValue,
                                        RiskValue, riskvalue_aggregationtag)

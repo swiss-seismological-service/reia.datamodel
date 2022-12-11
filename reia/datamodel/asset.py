@@ -1,12 +1,12 @@
-from sqlalchemy import Table, delete, event
+from sqlalchemy import ForeignKeyConstraint, Table, delete, event
 from sqlalchemy.orm import Session, relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
 from sqlalchemy.sql.sqltypes import BigInteger, Boolean, Float, Integer, String
 
 from reia.datamodel.base import ORMBase
 from reia.datamodel.lossvalues import riskvalue_aggregationtag
-from reia.datamodel.mixins import (ClassificationMixin, CreationInfoMixin,
-                                   PublicIdMixin)
+from reia.datamodel.mixins import (ClassificationMixin, CompatibleStringArray,
+                                   CreationInfoMixin, PublicIdMixin)
 
 
 class ExposureModel(ORMBase,
@@ -17,6 +17,7 @@ class ExposureModel(ORMBase,
     name = Column(String)
     category = Column(String)
     description = Column(String)
+    aggregationtypes = Column(CompatibleStringArray, nullable=False)
     dayoccupancy = Column(Boolean,
                           server_default='false',
                           default=False,
@@ -63,14 +64,16 @@ class CostType(ORMBase):
 asset_aggregationtag = Table(
     'loss_assoc_asset_aggregationtag',
     ORMBase.metadata,
-    Column('asset',
-           ForeignKey('loss_asset._oid',
-                      ondelete='CASCADE'),
-           primary_key=True),
-    Column('aggregationtag',
-           ForeignKey('loss_aggregationtag._oid',
-                      ondelete='CASCADE'),
-           primary_key=True),
+    Column('asset', ForeignKey('loss_asset._oid',
+                               ondelete='CASCADE')),
+
+    Column('aggregationname', String),
+    Column('aggregationtype', String),
+
+    ForeignKeyConstraint(['aggregationname', 'aggregationtype'],
+                         ['loss_aggregationtag.name',
+                         'loss_aggregationtag.type'],
+                         ondelete='CASCADE'),
 )
 
 
@@ -127,8 +130,9 @@ class Site(ORMBase):
 
 
 class AggregationTag(ORMBase):
-    type = Column(String, nullable=False)
-    name = Column(String, nullable=False)
+    _oid = None
+    type = Column(String, primary_key=True)
+    name = Column(String, primary_key=True)
 
     assets = relationship(
         'Asset', secondary=asset_aggregationtag,
@@ -138,6 +142,9 @@ class AggregationTag(ORMBase):
         'RiskValue', secondary=riskvalue_aggregationtag,
         back_populates='aggregationtags'
     )
+    __table_args__ = {
+        'postgresql_partition_by': 'LIST (type)',
+    }
 
 # Make sure that Aggregationtags which don't have a parent anymore
 # (meaning neither referenced by a LossValue nor an Asset) are deleted

@@ -6,6 +6,7 @@ from sqlalchemy.sql.schema import Column, ForeignKey
 from sqlalchemy.sql.sqltypes import BigInteger, Enum, Float, Integer, String
 
 from reia.datamodel.base import ORMBase
+from reia.datamodel.calculations import ECalculationType
 from reia.datamodel.mixins import RealQuantityMixin
 
 
@@ -20,17 +21,23 @@ class ELossCategory(enum.Enum):
 riskvalue_aggregationtag = Table(
     'loss_assoc_riskvalue_aggregationtag',
     ORMBase.metadata,
-    Column('_oid', BigInteger),
-    Column('riskvalue', BigInteger),
-    Column('aggregationtag', ForeignKey(
-        'loss_aggregationtag._oid',
-        ondelete='CASCADE')),
-    Column('losscategory', Enum(ELossCategory)),
-    Column('_calculation_oid', BigInteger),
 
-    ForeignKeyConstraint(['riskvalue', 'losscategory', '_calculation_oid'],
-                         ['loss_riskvalue._oid', 'loss_riskvalue.losscategory',
+    Column('riskvalue', BigInteger),
+    Column('risktype', Enum(ECalculationType)),
+    Column('_calculation_oid', ForeignKey('loss_calculation._oid',
+                                          ondelete='SET NULL')),
+
+    Column('aggregationname', String),
+    Column('aggregationtype', String),
+
+    ForeignKeyConstraint(['riskvalue', 'risktype', '_calculation_oid'],
+                         ['loss_riskvalue._oid', 'loss_riskvalue._type',
                           'loss_riskvalue._calculation_oid'],
+                         ondelete='CASCADE'),
+
+    ForeignKeyConstraint(['aggregationname', 'aggregationtype'],
+                         ['loss_aggregationtag.name',
+                         'loss_aggregationtag.type'],
                          ondelete='CASCADE'),
 
     postgresql_partition_by='LIST (_calculation_oid)'
@@ -38,36 +45,31 @@ riskvalue_aggregationtag = Table(
 
 
 class RiskValue(ORMBase):
-    __table_args__ = {
-        'postgresql_partition_by': 'LIST (_calculation_oid)',
-    }
+    _oid = Column(BigInteger, autoincrement=True,
+                  primary_key=True)
+    _type = Column(Enum(ECalculationType),
+                   primary_key=True)
 
-    __mapper_args__ = {
-        'primary_key': ['loss_riskvalue.c._oid',
-                        'loss_riskvalue.c._calculation_oid',
-                        'loss_riskvalue.c.losscategory']
-    }
-
-    _oid = Column(BigInteger, autoincrement=True, primary_key=True)
-    # id of the realization
-    eventid = Column(Integer, nullable=False)
-    losscategory = Column(Enum(ELossCategory), nullable=False, primary_key=True)
+    losscategory = Column(Enum(ELossCategory))
+    eventid = Column(Integer)  # id of the realization
     weight = Column(Float)
 
     _calculation_oid = Column(BigInteger,
                               ForeignKey('loss_calculation._oid',
                                          ondelete='CASCADE'),
-                              nullable=False, primary_key=True)
+                              primary_key=True)
+
     aggregationtags = relationship('AggregationTag',
                                    secondary=riskvalue_aggregationtag,
                                    back_populates='riskvalues',
                                    lazy='joined')
 
-    _type = Column(String(25))
-
     __mapper_args__ = {
-        'polymorphic_identity': 'riskvalue',
+        'polymorphic_identity': ECalculationType.RISK,
         'polymorphic_on': _type,
+    }
+    __table_args__ = {
+        'postgresql_partition_by': 'LIST (_calculation_oid)',
     }
 
 
@@ -84,7 +86,7 @@ class LossValue(RiskValue, RealQuantityMixin('loss', optional=True)):
     losscalculationbranch = relationship('LossCalculationBranch',
                                          back_populates='losses')
     __mapper_args__ = {
-        'polymorphic_identity': 'lossvalue'
+        'polymorphic_identity': ECalculationType.LOSS
     }
 
 
@@ -104,5 +106,5 @@ class DamageValue(RiskValue,
     damagecalculationbranch = relationship('DamageCalculationBranch',
                                            back_populates='damages')
     __mapper_args__ = {
-        'polymorphic_identity': 'damagevalue'
+        'polymorphic_identity': ECalculationType.DAMAGE
     }

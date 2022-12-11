@@ -25,6 +25,12 @@ class EEarthquakeType(enum.Enum):
     NATURAL = 'natural'
 
 
+class ECalculationType(str, enum.Enum):
+    RISK = 'risk'
+    LOSS = 'loss'
+    DAMAGE = 'damage'
+
+
 class EarthquakeInformation(ORMBase, CreationInfoMixin):
     """Calculation Parameters model"""
     originid = Column(String, nullable=False)
@@ -58,10 +64,10 @@ class CalculationBranch(ORMBase):
     exposuremodel = relationship('ExposureModel',
                                  back_populates='calculationbranch')
 
-    _type = Column(String(25))
+    _type = Column(Enum(ECalculationType))
 
     __mapper_args__ = {
-        'polymorphic_identity': 'calculationbranch',
+        'polymorphic_identity': ECalculationType.RISK,
         'polymorphic_on': _type,
     }
 
@@ -128,7 +134,7 @@ class LossCalculationBranch(CalculationBranch):
         foreign_keys=[_businessinterruptionvulnerabilitymodel_oid])
 
     __mapper_args__ = {
-        'polymorphic_identity': 'losscalculationbranch'
+        'polymorphic_identity': ECalculationType.LOSS
     }
 
 
@@ -147,7 +153,7 @@ class DamageCalculationBranch(CalculationBranch):
     damagecalculation = relationship('DamageCalculation',
                                      back_populates='damagecalculationbranches')
     __mapper_args__ = {
-        'polymorphic_identity': 'damagecalculationbranch'
+        'polymorphic_identity': ECalculationType.DAMAGE
     }
 
 
@@ -167,10 +173,10 @@ class Calculation(ORMBase, CreationInfoMixin):
     earthquakeinformation = relationship('EarthquakeInformation',
                                          back_populates='calculation')
 
-    _type = Column(String(25))
+    _type = Column(Enum(ECalculationType))
 
     __mapper_args__ = {
-        'polymorphic_identity': 'calculation',
+        'polymorphic_identity': ECalculationType.RISK,
         'polymorphic_on': _type,
     }
 
@@ -189,7 +195,7 @@ class LossCalculation(Calculation):
                                            cascade='all, delete-orphan')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'losscalculation'
+        'polymorphic_identity': ECalculationType.LOSS
     }
 
 
@@ -207,5 +213,5 @@ class DamageCalculation(Calculation):
                                              cascade='all, delete-orphan')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'damagecalculation'
+        'polymorphic_identity': ECalculationType.DAMAGE
     }
