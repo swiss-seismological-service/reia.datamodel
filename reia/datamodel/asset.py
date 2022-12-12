@@ -67,11 +67,11 @@ asset_aggregationtag = Table(
     Column('asset', ForeignKey('loss_asset._oid',
                                ondelete='CASCADE')),
 
-    Column('aggregationname', String),
+    Column('aggregationtag', BigInteger),
     Column('aggregationtype', String),
 
-    ForeignKeyConstraint(['aggregationname', 'aggregationtype'],
-                         ['loss_aggregationtag.name',
+    ForeignKeyConstraint(['aggregationtag', 'aggregationtype'],
+                         ['loss_aggregationtag._oid',
                          'loss_aggregationtag.type'],
                          ondelete='CASCADE'),
 )
@@ -130,9 +130,9 @@ class Site(ORMBase):
 
 
 class AggregationTag(ORMBase):
-    _oid = None
+    _oid = Column(BigInteger, autoincrement=True, primary_key=True)
     type = Column(String, primary_key=True)
-    name = Column(String, primary_key=True)
+    name = Column(String)
 
     assets = relationship(
         'Asset', secondary=asset_aggregationtag,

@@ -27,7 +27,7 @@ riskvalue_aggregationtag = Table(
     Column('_calculation_oid', ForeignKey('loss_calculation._oid',
                                           ondelete='SET NULL')),
 
-    Column('aggregationname', String),
+    Column('aggregationtag', BigInteger),
     Column('aggregationtype', String),
 
     ForeignKeyConstraint(['riskvalue', 'risktype', '_calculation_oid'],
@@ -35,8 +35,8 @@ riskvalue_aggregationtag = Table(
                           'loss_riskvalue._calculation_oid'],
                          ondelete='CASCADE'),
 
-    ForeignKeyConstraint(['aggregationname', 'aggregationtype'],
-                         ['loss_aggregationtag.name',
+    ForeignKeyConstraint(['aggregationtag', 'aggregationtype'],
+                         ['loss_aggregationtag._oid',
                          'loss_aggregationtag.type'],
                          ondelete='CASCADE'),
 
