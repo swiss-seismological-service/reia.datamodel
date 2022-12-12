@@ -23,15 +23,15 @@ riskvalue_aggregationtag = Table(
     ORMBase.metadata,
 
     Column('riskvalue', BigInteger),
-    Column('risktype', Enum(ECalculationType)),
+    Column('losscategory', Enum(ELossCategory)),
     Column('_calculation_oid', ForeignKey('loss_calculation._oid',
                                           ondelete='SET NULL')),
 
     Column('aggregationtag', BigInteger),
     Column('aggregationtype', String),
 
-    ForeignKeyConstraint(['riskvalue', 'risktype', '_calculation_oid'],
-                         ['loss_riskvalue._oid', 'loss_riskvalue._type',
+    ForeignKeyConstraint(['riskvalue', 'losscategory', '_calculation_oid'],
+                         ['loss_riskvalue._oid', 'loss_riskvalue.losscategory',
                           'loss_riskvalue._calculation_oid'],
                          ondelete='CASCADE'),
 
@@ -47,10 +47,10 @@ riskvalue_aggregationtag = Table(
 class RiskValue(ORMBase):
     _oid = Column(BigInteger, autoincrement=True,
                   primary_key=True)
-    _type = Column(Enum(ECalculationType),
-                   primary_key=True)
+    _type = Column(Enum(ECalculationType))
 
-    losscategory = Column(Enum(ELossCategory))
+    losscategory = Column(Enum(ELossCategory),
+                          primary_key=True)
     eventid = Column(Integer)  # id of the realization
     weight = Column(Float)
 
