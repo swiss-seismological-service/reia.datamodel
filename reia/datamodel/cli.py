@@ -1,6 +1,7 @@
 
-from reia import drop_db, init_db
 import typer
+
+from reia.datamodel.base import drop_db, init_db
 
 app = typer.Typer(add_completion=False)
 db = typer.Typer()

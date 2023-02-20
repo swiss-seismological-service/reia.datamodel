@@ -33,7 +33,7 @@ _packages = ['reia.datamodel']
 
 _entry_points = {
     'console_scripts': [
-        'reia=reia.cli:app'
+        'reia=reia.datamodel.cli:app'
     ],
 }
 

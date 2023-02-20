@@ -1,5 +1,9 @@
+import os
+
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
-from sqlalchemy.schema import Column
+from sqlalchemy.schema import Column, MetaData
 from sqlalchemy.sql.sqltypes import BigInteger
 
 
@@ -19,3 +23,32 @@ class Base(object):
 
 
 ORMBase = declarative_base(cls=Base)
+
+
+def load_engine():
+    load_dotenv(f'{os.getcwd()}/.env')  # load environment variables
+
+    DB_CONNECTION_STRING = \
+        f"postgresql+psycopg2://{os.getenv('POSTGRES_USER')}:" \
+        f"{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}" \
+        f":{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB')}"
+
+    engine = create_engine(DB_CONNECTION_STRING, echo=False, future=True)
+    return engine
+
+
+def init_db():
+    """
+    Initializes the Database.
+    All DB modules need to be imported when calling this function.
+    """
+    engine = load_engine()
+    ORMBase.metadata.create_all(engine)
+
+
+def drop_db():
+    """Drops all database Tables but leaves the DB itself in place"""
+    engine = load_engine()
+    m = MetaData()
+    m.reflect(engine)
+    m.drop_all(engine)
