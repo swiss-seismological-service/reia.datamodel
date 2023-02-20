@@ -4,6 +4,7 @@ setup.py for reia.datamodel
 '''
 
 import sys
+
 from setuptools import setup
 
 if sys.version_info[:2] < (3, 8):
@@ -19,7 +20,9 @@ _install_requires = [
 
 _extras_require = {'dev': [
     'flake8>=4.0.1',
-    'autopep8>=1.6.0'
+    'autopep8>=1.6.0',
+    'typer==0.7.0',
+    'psycopg2==2.9.5'
 ]}
 
 _name = 'reia.datamodel'
@@ -28,7 +31,11 @@ _description = ('Datamodel for Event Specific Loss calculations.')
 
 _packages = ['reia.datamodel']
 
-_entry_points = {}
+_entry_points = {
+    'console_scripts': [
+        'reia=reia.cli:app'
+    ],
+}
 
 # ----------------------------------------------------------------------------
 setup(
