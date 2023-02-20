@@ -29,9 +29,9 @@ def load_engine():
     load_dotenv(f'{os.getcwd()}/.env')  # load environment variables
 
     DB_CONNECTION_STRING = \
-        f"postgresql+psycopg2://{os.getenv('POSTGRES_USER')}:" \
-        f"{os.getenv('POSTGRES_PASSWORD')}@{os.getenv('POSTGRES_HOST')}" \
-        f":{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB')}"
+        f"postgresql+psycopg2://{os.getenv('DB_USER')}:" \
+        f"{os.getenv('DB_PASSWORD')}@{os.getenv('POSTGRES_HOST')}" \
+        f":{os.getenv('POSTGRES_PORT')}/{os.getenv('DB_NAME')}"
 
     engine = create_engine(DB_CONNECTION_STRING, echo=False, future=True)
     return engine
