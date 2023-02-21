@@ -70,7 +70,7 @@ class FragilityFunction(ClassificationMixin('taxonomy'), ORMBase):
         BigInteger,
         ForeignKey('loss_fragilitymodel._oid', ondelete='CASCADE'))
     fragilitymodel = relationship(
-        'fragilityModel',
+        'FragilityModel',
         back_populates='fragilityfunctions')
 
     format = Column(String)
@@ -80,6 +80,7 @@ class FragilityFunction(ClassificationMixin('taxonomy'), ORMBase):
     maxintensitymeasurelevel = Column(Float)
 
     intensitymeasuretype = Column(String, nullable=False)
+    intensitymeasurelevels = Column(CompatibleFloatArray)
 
     limitstates = relationship('LimitState',
                                back_populates='fragilityfunction',
@@ -89,14 +90,13 @@ class FragilityFunction(ClassificationMixin('taxonomy'), ORMBase):
 
 
 class LimitState(ORMBase):
-    limitstate = Column(Float)
+    name = Column(String)
 
     # params
     mean = Column(Float)
     stddev = Column(Float)
 
     # poes
-    intensitymeasurelevels = Column(CompatibleFloatArray)
     poes = Column(CompatibleFloatArray)
 
     _fragilityfunction_oid = Column(BigInteger, ForeignKey(
