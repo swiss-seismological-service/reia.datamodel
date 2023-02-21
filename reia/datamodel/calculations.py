@@ -152,6 +152,44 @@ class DamageCalculationBranch(CalculationBranch):
                                          ondelete='CASCADE'))
     damagecalculation = relationship('DamageCalculation',
                                      back_populates='damagecalculationbranches')
+
+    _contentsfragilitymodel_oid = Column(
+        BigInteger,
+        ForeignKey('loss_fragilitymodel._oid',
+                   ondelete="RESTRICT"))
+    _structuralfragilitymodel_oid = Column(
+        BigInteger,
+        ForeignKey('loss_fragilitymodel._oid',
+                   ondelete="RESTRICT"))
+    _nonstructuralfragilitymodel_oid = Column(
+        BigInteger,
+        ForeignKey('loss_fragilitymodel._oid',
+                   ondelete="RESTRICT"))
+    _businessinterruptionfragilitymodel_oid = Column(
+        BigInteger,
+        ForeignKey('loss_fragilitymodel._oid',
+                   ondelete="RESTRICT"))
+
+    contentsfragilitymodel = relationship(
+        'ContentsFragilityModel',
+        backref='damagecalculation',
+        foreign_keys=[_contentsfragilitymodel_oid])
+
+    structuralfragilitymodel = relationship(
+        'StructuralFragilityModel',
+        backref='damagecalculation',
+        foreign_keys=[_structuralfragilitymodel_oid])
+
+    nonstructuralfragilitymodel = relationship(
+        'NonstructuralFragilityModel',
+        backref='damagecalculation',
+        foreign_keys=[_nonstructuralfragilitymodel_oid])
+
+    businessinterruptionfragilitymodel = relationship(
+        'BusinessInterruptionFragilityModel',
+        backref='damagecalculation',
+        foreign_keys=[_businessinterruptionfragilitymodel_oid])
+
     __mapper_args__ = {
         'polymorphic_identity': ECalculationType.DAMAGE
     }

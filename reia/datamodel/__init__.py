@@ -8,6 +8,11 @@ from reia.datamodel.calculations import (Calculation, CalculationBranch,
                                          ECalculationType, EEarthquakeType,
                                          EStatus, LossCalculation,
                                          LossCalculationBranch)
+from reia.datamodel.fragility import (BusinessInterruptionFragilityModel,
+                                      ContentsFragilityModel,
+                                      FragilityFunction, FragilityModel,
+                                      LimitState, NonstructuralFragilityModel,
+                                      StructuralFragilityModel)
 from reia.datamodel.lossvalues import (DamageValue, ELossCategory, LossValue,
                                        RiskValue, riskvalue_aggregationtag)
 from reia.datamodel.vulnerability import (

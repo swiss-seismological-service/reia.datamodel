@@ -16,6 +16,7 @@ class ELossCategory(enum.Enum):
     NONSTRUCTURAL = 'nonstructural'
     OCCUPANTS = 'occupants'
     STRUCTURAL = 'structural'
+    NULL = 'null'
 
 
 riskvalue_aggregationtag = Table(

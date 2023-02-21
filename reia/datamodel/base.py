@@ -48,7 +48,15 @@ def init_db():
 
 def drop_db():
     """Drops all database Tables but leaves the DB itself in place"""
+
     engine = load_engine()
     m = MetaData()
     m.reflect(engine)
-    m.drop_all(engine)
+
+    droptables = [
+        t for k,
+        t in m.tables.items() if k not in [
+            'municipalities',
+            'spatial_ref_sys']]
+
+    m.drop_all(engine, droptables)
