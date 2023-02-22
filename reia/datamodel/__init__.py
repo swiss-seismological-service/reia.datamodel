@@ -11,8 +11,9 @@ from reia.datamodel.calculations import (Calculation, CalculationBranch,
 from reia.datamodel.fragility import (BusinessInterruptionFragilityModel,
                                       ContentsFragilityModel,
                                       FragilityFunction, FragilityModel,
-                                      LimitState, NonstructuralFragilityModel,
-                                      StructuralFragilityModel)
+                                      LimitState, Mapping,
+                                      NonstructuralFragilityModel,
+                                      StructuralFragilityModel, TaxonomyMap)
 from reia.datamodel.lossvalues import (DamageValue, ELossCategory, LossValue,
                                        RiskValue, riskvalue_aggregationtag)
 from reia.datamodel.vulnerability import (

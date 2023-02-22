@@ -64,6 +64,12 @@ class CalculationBranch(ORMBase):
     exposuremodel = relationship('ExposureModel',
                                  back_populates='calculationbranch')
 
+    _taxonomymap_oid = Column(BigInteger,
+                              ForeignKey('loss_taxonomymap._oid',
+                                         ondelete='RESTRICT'))
+    taxonomymap = relationship('TaxonomyMap',
+                               backref='calculationbranches')
+
     _type = Column(Enum(ECalculationType))
 
     __mapper_args__ = {

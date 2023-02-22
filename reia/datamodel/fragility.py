@@ -105,7 +105,21 @@ class LimitState(ORMBase):
                                      back_populates='limitstates')
 
 
-class TaxonomyMapping(ORMBase):
-    fromtaxonomy = Column(String)
-    totaxonomy = Column(String)
+class TaxonomyMap(ORMBase, CreationInfoMixin):
+    name = Column(String)
+    mappings = relationship('Mapping',
+                            back_populates='taxonomymap',
+                            passive_deletes=True,
+                            cascade='all, delete-orphan',
+                            lazy='joined')
+
+
+class Mapping(ORMBase):
+    taxonomy = Column(String)
+    conversion = Column(String)
     weight = Column(Float)
+
+    _taxonomymap_oid = Column(BigInteger, ForeignKey(
+        'loss_taxonomymap._oid', ondelete='CASCADE'))
+    taxonomymap = relationship('TaxonomyMap',
+                               back_populates='mappings')
