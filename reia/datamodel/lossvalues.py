@@ -12,7 +12,7 @@ from reia.datamodel.mixins import RealQuantityMixin
 
 class ELossCategory(enum.Enum):
     CONTENTS = 'contents'
-    BUSINESS_INTERRUPTION = 'businessinterruption'
+    BUSINESS_INTERRUPTION = 'business_interruption'
     NONSTRUCTURAL = 'nonstructural'
     OCCUPANTS = 'occupants'
     STRUCTURAL = 'structural'
