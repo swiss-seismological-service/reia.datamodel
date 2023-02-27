@@ -18,6 +18,7 @@ class EStatus(str, enum.Enum):
     COMPLETE = 'complete'
     FAILED = 'failed'
     ABORTED = 'aborted'
+    SUBMITTED = 'submitted'
 
 
 class EEarthquakeType(enum.Enum):
@@ -156,8 +157,9 @@ class DamageCalculationBranch(CalculationBranch):
     _calculation_oid = Column(BigInteger,
                               ForeignKey('loss_calculation._oid',
                                          ondelete='CASCADE'))
-    damagecalculation = relationship('DamageCalculation',
-                                     back_populates='damagecalculationbranches')
+    damagecalculation = relationship(
+        'DamageCalculation',
+        back_populates='damagecalculationbranches')
 
     _contentsfragilitymodel_oid = Column(
         BigInteger,
@@ -251,10 +253,11 @@ class DamageCalculation(Calculation):
                            passive_deletes=True,
                            cascade='all, delete-orphan')
 
-    damagecalculationbranches = relationship('DamageCalculationBranch',
-                                             back_populates='damagecalculation',
-                                             passive_deletes=True,
-                                             cascade='all, delete-orphan')
+    damagecalculationbranches = relationship(
+        'DamageCalculationBranch',
+        back_populates='damagecalculation',
+        passive_deletes=True,
+        cascade='all, delete-orphan')
 
     __mapper_args__ = {
         'polymorphic_identity': ECalculationType.DAMAGE
