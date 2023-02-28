@@ -1,10 +1,9 @@
 import enum
 
-from sqlalchemy import UniqueConstraint
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import Column, ForeignKey
-from sqlalchemy.sql.sqltypes import BigInteger, Enum, Float, String
+from sqlalchemy.sql.sqltypes import BigInteger, Boolean, Enum, Float, String
 
 from reia.datamodel.base import ORMBase
 from reia.datamodel.mixins import (CompatibleStringArray, CreationInfoMixin,
@@ -32,19 +31,29 @@ class ECalculationType(str, enum.Enum):
     DAMAGE = 'damage'
 
 
-class EarthquakeInformation(ORMBase, CreationInfoMixin):
-    """Calculation Parameters model"""
+class RiskAssessment(ORMBase, CreationInfoMixin):
+
     originid = Column(String, nullable=False)
     type = Column(Enum(EEarthquakeType),
                   default=EEarthquakeType.NATURAL,
                   nullable=False)
+    preferred = Column(Boolean, nullable=False, default=False)
+    published = Column(Boolean, nullable=False, default=False)
+    losscalculation = relationship('LossCalculation',
+                                   backref='riskassessments')
 
-    calculation = relationship('Calculation',
-                               back_populates='earthquakeinformation',
-                               passive_deletes=True,
-                               cascade='all, delete-orphan')
+    _losscalculation_oid = Column(BigInteger,
+                                  ForeignKey('loss_calculation._oid',
+                                             ondelete="RESTRICT"),
+                                  nullable=True)
 
-    __table_args__ = (UniqueConstraint('originid', name='originid_unique'),)
+    damagecalculation = relationship('DamageCalculation',
+                                     backref='riskassessments')
+
+    _damagecalculation_oid = Column(BigInteger,
+                                    ForeignKey('loss_calculation._oid',
+                                               ondelete="RESTRICT"),
+                                    nullable=True)
 
 
 class CalculationBranch(ORMBase):
@@ -213,11 +222,6 @@ class Calculation(ORMBase, CreationInfoMixin):
     aggregateby = Column(CompatibleStringArray)
     status = Column(Enum(EStatus), default=EStatus.PREPARED)
     description = Column(String())
-
-    _earthquakeinformation_oid = Column(BigInteger, ForeignKey(
-        'loss_earthquakeinformation._oid', ondelete='CASCADE'))
-    earthquakeinformation = relationship('EarthquakeInformation',
-                                         back_populates='calculation')
 
     _type = Column(Enum(ECalculationType))
 

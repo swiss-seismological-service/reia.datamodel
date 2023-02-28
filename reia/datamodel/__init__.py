@@ -4,10 +4,9 @@ from reia.datamodel.asset import (AggregationTag, Asset, CostType,
 from reia.datamodel.calculations import (Calculation, CalculationBranch,
                                          DamageCalculation,
                                          DamageCalculationBranch,
-                                         EarthquakeInformation,
                                          ECalculationType, EEarthquakeType,
                                          EStatus, LossCalculation,
-                                         LossCalculationBranch)
+                                         LossCalculationBranch, RiskAssessment)
 from reia.datamodel.fragility import (BusinessInterruptionFragilityModel,
                                       ContentsFragilityModel,
                                       FragilityFunction, FragilityModel,
