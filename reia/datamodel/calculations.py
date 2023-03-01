@@ -10,14 +10,13 @@ from reia.datamodel.mixins import (CompatibleStringArray, CreationInfoMixin,
                                    JSONEncodedDict)
 
 
-class EStatus(str, enum.Enum):
-    PREPARED = 'prepared'
-    CREATED = 'created'
-    EXECUTING = 'executing'
-    COMPLETE = 'complete'
-    FAILED = 'failed'
-    ABORTED = 'aborted'
-    SUBMITTED = 'submitted'
+class EStatus(int, enum.Enum):
+    FAILED = 1
+    ABORTED = 2
+    CREATED = 3
+    SUBMITTED = 4
+    EXECUTING = 5
+    COMPLETE = 6
 
 
 class EEarthquakeType(enum.Enum):
@@ -34,26 +33,28 @@ class ECalculationType(str, enum.Enum):
 class RiskAssessment(ORMBase, CreationInfoMixin):
 
     originid = Column(String, nullable=False)
+    status = Column(Enum(EStatus), nullable=False, default=EStatus.CREATED)
     type = Column(Enum(EEarthquakeType),
                   default=EEarthquakeType.NATURAL,
                   nullable=False)
     preferred = Column(Boolean, nullable=False, default=False)
     published = Column(Boolean, nullable=False, default=False)
-    losscalculation = relationship('LossCalculation',
-                                   backref='riskassessments')
 
     _losscalculation_oid = Column(BigInteger,
                                   ForeignKey('loss_calculation._oid',
                                              ondelete="RESTRICT"),
                                   nullable=True)
-
-    damagecalculation = relationship('DamageCalculation',
-                                     backref='riskassessments')
+    losscalculation = relationship('LossCalculation',
+                                   backref='riskassessments',
+                                   foreign_keys=[_losscalculation_oid])
 
     _damagecalculation_oid = Column(BigInteger,
                                     ForeignKey('loss_calculation._oid',
                                                ondelete="RESTRICT"),
                                     nullable=True)
+    damagecalculation = relationship('DamageCalculation',
+                                     backref='riskassessments',
+                                     foreign_keys=[_damagecalculation_oid])
 
 
 class CalculationBranch(ORMBase):
@@ -64,7 +65,7 @@ class CalculationBranch(ORMBase):
     """
 
     config = Column(MutableDict.as_mutable(JSONEncodedDict))
-    status = Column(Enum(EStatus), default=EStatus.PREPARED)
+    status = Column(Enum(EStatus), nullable=False, default=EStatus.CREATED)
     weight = Column(Float())
 
     _exposuremodel_oid = Column(BigInteger,
@@ -220,7 +221,7 @@ class Calculation(ORMBase, CreationInfoMixin):
     """
 
     aggregateby = Column(CompatibleStringArray)
-    status = Column(Enum(EStatus), default=EStatus.PREPARED)
+    status = Column(Enum(EStatus), nullable=False, default=EStatus.CREATED)
     description = Column(String())
 
     _type = Column(Enum(ECalculationType))
