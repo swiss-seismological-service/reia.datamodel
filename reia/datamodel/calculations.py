@@ -19,7 +19,7 @@ class EStatus(int, enum.Enum):
     COMPLETE = 6
 
 
-class EEarthquakeType(enum.Enum):
+class EEarthquakeType(str, enum.Enum):
     SCENARIO = 'scenario'
     NATURAL = 'natural'
 
