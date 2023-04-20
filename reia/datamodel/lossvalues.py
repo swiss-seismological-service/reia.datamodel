@@ -10,7 +10,7 @@ from reia.datamodel.calculations import ECalculationType
 from reia.datamodel.mixins import RealQuantityMixin
 
 
-class ELossCategory(enum.Enum):
+class ELossCategory(str, enum.Enum):
     CONTENTS = 'contents'
     BUSINESS_INTERRUPTION = 'business_interruption'
     NONSTRUCTURAL = 'nonstructural'
